@@ -1,1424 +1,1782 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>인공지능기본법 컴플라이언스 체크포인트</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #1a365d;
-            --primary-light: #2c5282;
-            --accent: #3182ce;
-            --accent-light: #63b3ed;
-            --success: #38a169;
-            --warning: #dd6b20;
-            --danger: #e53e3e;
-            --bg-main: #f7fafc;
-            --bg-card: #ffffff;
-            --text-primary: #1a202c;
-            --text-secondary: #4a5568;
-            --text-muted: #718096;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            line-height: 1.7;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            padding: 3rem 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.5;
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .header h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        .header .subtitle {
-            font-size: 1rem;
-            opacity: 0.9;
-            font-weight: 400;
-        }
-
-        .header .law-info {
-            margin-top: 1rem;
-            padding: 0.75rem 1.5rem;
-            background: rgba(255,255,255,0.15);
-            border-radius: 8px;
-            display: inline-block;
-            font-size: 0.9rem;
-        }
-
-        .progress-container {
-            background: white;
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-
-        .progress-inner {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-
-        .progress-text {
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .progress-percentage {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .progress-bar {
-            height: 10px;
-            background: var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-            width: 0%;
-        }
-
-        .main-content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .step-nav {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .step-dot {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--border);
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .step-dot.active {
-            background: var(--accent);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .step-dot.completed {
-            background: var(--success);
-            color: white;
-        }
-
-        .step-dot:hover {
-            border-color: var(--accent);
-        }
-
-        .section {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
-
-        .section-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            padding: 1.5rem 2rem;
-        }
-
-        .section-header h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .section-header p {
-            opacity: 0.9;
-            font-size: 0.9rem;
-        }
-
-        .section-body {
-            padding: 2rem;
-        }
-
-        .question {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .question:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .question-text {
-            font-weight: 500;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        .question-hint {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            padding: 0.75rem 1rem;
-            background: #f0f4f8;
-            border-radius: 8px;
-            border-left: 3px solid var(--accent);
-        }
-
-        .options {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .option {
-            flex: 1;
-            min-width: 120px;
-        }
-
-        .option input {
-            display: none;
-        }
-
-        .option label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.875rem 1.5rem;
-            background: var(--bg-main);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .option input:checked + label {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
-        }
-
-        .option label:hover {
-            border-color: var(--accent);
-        }
-
-        .checkbox-group {
-            display: grid;
-            gap: 0.75rem;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: var(--bg-main);
-            border-radius: 10px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .checkbox-item:hover {
-            border-color: var(--accent-light);
-        }
-
-        .checkbox-item.checked {
-            border-color: var(--accent);
-            background: #ebf8ff;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--accent);
-            cursor: pointer;
-            flex-shrink: 0;
-            margin-top: 2px;
-            pointer-events: none;
-        }
-
-        .checkbox-item .checkbox-label {
-            cursor: pointer;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            flex: 1;
-        }
-
-        .checkbox-item .law-ref {
-            display: block;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .btn {
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-prev {
-            background: var(--bg-main);
-            color: var(--text-secondary);
-            border: 2px solid var(--border);
-        }
-
-        .btn-prev:hover {
-            background: var(--border);
-        }
-
-        .btn-next {
-            background: var(--accent);
-            color: white;
-            margin-left: auto;
-        }
-
-        .btn-next:hover {
-            background: var(--primary-light);
-        }
-
-        .btn-result {
-            background: var(--success);
-            color: white;
-            margin-left: auto;
-        }
-
-        .btn-result:hover {
-            background: #2f855a;
-        }
-
-        .result-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
-
-        .result-header {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .result-header.high-risk {
-            background: linear-gradient(135deg, #c53030 0%, #e53e3e 100%);
-            color: white;
-        }
-
-        .result-header.medium-risk {
-            background: linear-gradient(135deg, #c05621 0%, #dd6b20 100%);
-            color: white;
-        }
-
-        .result-header.low-risk {
-            background: linear-gradient(135deg, #276749 0%, #38a169 100%);
-            color: white;
-        }
-
-        .result-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .result-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .result-body {
-            padding: 2rem;
-        }
-
-        .result-section {
-            margin-bottom: 2rem;
-        }
-
-        .result-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .result-section h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .obligation-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            background: var(--bg-main);
-            border-radius: 10px;
-            border-left: 4px solid var(--accent);
-        }
-
-        .obligation-item.required {
-            border-left-color: var(--danger);
-        }
-
-        .obligation-item.recommended {
-            border-left-color: var(--warning);
-        }
-
-        .obligation-item.optional {
-            border-left-color: var(--success);
-        }
-
-        .obligation-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-
-        .badge-required {
-            background: #fed7d7;
-            color: #c53030;
-        }
-
-        .badge-recommended {
-            background: #feebc8;
-            color: #c05621;
-        }
-
-        .badge-optional {
-            background: #c6f6d5;
-            color: #276749;
-        }
-
-        .obligation-content h4 {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .obligation-content p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .obligation-content .law-article {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-action {
-            padding: 0.875rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid var(--border);
-            background: white;
-            color: var(--text-secondary);
-        }
-
-        .btn-action:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .btn-restart {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .btn-restart:hover {
-            background: var(--primary-light);
-            border-color: var(--primary-light);
-            color: white;
-        }
-
-        .info-box {
-            padding: 1.25rem;
-            background: #ebf8ff;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            border: 1px solid #bee3f8;
-        }
-
-        .info-box.warning {
-            background: #fffaf0;
-            border-color: #fbd38d;
-        }
-
-        .info-box h4 {
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .info-box p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--border);
-            margin-top: 2rem;
-        }
-
-        .footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.6rem;
-            }
-
-            .main-content {
-                padding: 1rem;
-            }
-
-            .section-body {
-                padding: 1.25rem;
-            }
-
-            .options {
-                flex-direction: column;
-            }
-
-            .option {
-                min-width: 100%;
-            }
-
-            .nav-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .btn-next, .btn-result {
-                margin-left: 0;
-            }
-        }
-
-        @media print {
-            .progress-container, .step-nav, .nav-buttons, .action-buttons {
-                display: none !important;
-            }
-
-            .section {
-                display: block !important;
-                page-break-inside: avoid;
-            }
-
-            .result-card {
-                box-shadow: none;
-                border: 1px solid #ccc;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 기본법 적용 분석기</title>
+<style>
+/* ===== CSS VARIABLES & RESET ===== */
+:root {
+  --navy: #0f1a2e;
+  --navy-light: #1a2844;
+  --navy-mid: #243556;
+  --slate: #3d4f6f;
+  --gold: #c9953c;
+  --gold-light: #e8c06a;
+  --gold-pale: #f5e6c0;
+  --cream: #faf7f0;
+  --white: #ffffff;
+  --text: #1e2a3a;
+  --text-secondary: #5a6a7e;
+  --border: #d4dae3;
+  --border-light: #e8ecf1;
+  --success: #2a7d4f;
+  --warning: #b8860b;
+  --danger: #c0392b;
+  --info: #2471a3;
+  --bg: #f4f1eb;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(15,26,46,0.08);
+  --shadow-lg: 0 8px 32px rgba(15,26,46,0.12);
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(15,26,46,0.3);
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.header-icon {
+  width: 40px; height: 40px;
+  background: var(--gold);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  color: var(--navy);
+  font-weight: 700;
+  font-family: 'Noto Serif KR', serif;
+}
+.header-title {
+  color: var(--white);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+.header-sub {
+  color: var(--gold-light);
+  font-size: 12px;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+.header-badge {
+  background: rgba(201,149,60,0.15);
+  border: 1px solid rgba(201,149,60,0.3);
+  color: var(--gold-light);
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+
+/* ===== INTRO SCREEN ===== */
+.intro-screen {
+  text-align: center;
+  padding: 48px 24px;
+  animation: fadeUp 0.6s ease;
+}
+.intro-screen h1 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+.intro-screen .lead {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto 32px;
+  line-height: 1.8;
+}
+.intro-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto; margin-right: auto;
+}
+.intro-feature {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+}
+.intro-feature .feat-icon {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 8px;
+  font-family: 'Noto Serif KR', serif;
+}
+.intro-feature .feat-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.intro-feature .feat-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.intro-disclaimer {
+  background: rgba(201,149,60,0.08);
+  border: 1px solid rgba(201,149,60,0.2);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  max-width: 540px;
+  margin: 0 auto 32px;
+  line-height: 1.7;
+}
+
+.btn-primary {
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  padding: 14px 48px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.btn-primary:hover {
+  background: var(--navy-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+.btn-secondary {
+  background: var(--white);
+  color: var(--navy);
+  border: 1.5px solid var(--border);
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.btn-secondary:hover { border-color: var(--navy); }
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), #d4a645);
+  color: var(--navy);
+  border: none;
+  padding: 14px 48px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.btn-gold:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+.btn-sm { padding: 8px 20px; font-size: 13px; }
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  display: none;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.progress-bar.active { display: block; animation: fadeDown 0.3s ease; }
+.progress-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
+}
+.progress-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.progress-step .step-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--border-light);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 auto 6px;
+  transition: var(--transition);
+  position: relative;
+  z-index: 2;
+}
+.progress-step.active .step-dot {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: var(--white);
+}
+.progress-step.done .step-dot {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--navy);
+}
+.progress-step .step-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.progress-step.active .step-label { color: var(--navy); font-weight: 600; }
+.progress-step.done .step-label { color: var(--gold); }
+.progress-line {
+  position: absolute;
+  top: 16px;
+  left: calc(100%/12);
+  right: calc(100%/12);
+  height: 2px;
+  background: var(--border-light);
+  z-index: 1;
+}
+.progress-line-fill {
+  height: 100%;
+  background: var(--gold);
+  transition: width 0.4s ease;
+  border-radius: 1px;
+}
+
+/* ===== STEP CARD ===== */
+.step-card {
+  display: none;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.4s ease;
+}
+.step-card.active { display: block; }
+.step-header {
+  margin-bottom: 28px;
+}
+.step-number {
+  display: inline-block;
+  background: var(--navy);
+  color: var(--gold-light);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.step-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: -0.3px;
+}
+.step-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+/* ===== FORM ELEMENTS ===== */
+.question-group {
+  margin-bottom: 28px;
+}
+.question-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: block;
+  line-height: 1.6;
+}
+.question-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* Radio & Checkbox */
+.option-list { display: flex; flex-direction: column; gap: 8px; }
+.option-item {
+  position: relative;
+  display: flex; align-items: flex-start;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: var(--white);
+}
+.option-item:hover { border-color: var(--slate); background: #fafbfc; }
+.option-item.selected {
+  border-color: var(--navy);
+  background: rgba(15,26,46,0.03);
+}
+.option-item input[type="radio"],
+.option-item input[type="checkbox"] {
+  position: absolute; opacity: 0;
+}
+.option-indicator {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  margin-right: 12px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  margin-top: 1px;
+}
+.option-item input[type="checkbox"] + .option-indicator { border-radius: 4px; }
+.option-item.selected .option-indicator {
+  border-color: var(--navy);
+  background: var(--navy);
+}
+.option-item.selected .option-indicator::after {
+  content: '';
+  width: 8px; height: 8px;
+  background: var(--white);
+  border-radius: 50%;
+}
+.option-item input[type="checkbox"] + .option-indicator.selected::after,
+.option-item.selected input[type="checkbox"] + .option-indicator::after {
+  border-radius: 2px;
+  width: 10px; height: 10px;
+  background: none;
+  border-bottom: 2px solid var(--white);
+  border-right: 2px solid var(--white);
+  transform: rotate(45deg);
+  width: 5px; height: 9px;
+  margin-bottom: 2px;
+}
+.option-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.option-text small {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Info box */
+.info-box {
+  background: rgba(36,113,163,0.06);
+  border-left: 3px solid var(--info);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+}
+.warning-box {
+  background: rgba(201,149,60,0.08);
+  border-left: 3px solid var(--warning);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* Navigation */
+.step-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-light);
+}
+.step-nav .btn-secondary { min-width: 100px; }
+.step-nav .btn-primary { min-width: 140px; }
+
+/* ===== CONDITIONAL SECTION (hidden by default) ===== */
+.conditional { display: none; }
+.conditional.visible { display: block; animation: fadeUp 0.3s ease; }
+
+/* ===== REPORT ===== */
+.report-screen { display: none; animation: fadeUp 0.5s ease; }
+.report-screen.active { display: block; }
+
+.report-actions {
+  display: flex; gap: 12px; margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.report-container {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.report-header-band {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  padding: 32px;
+  color: var(--white);
+  text-align: center;
+}
+.report-header-band h1 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+.report-header-band .report-date {
+  color: var(--gold-light);
+  font-size: 13px;
+}
+.report-body {
+  padding: 32px;
+}
+.report-section {
+  margin-bottom: 32px;
+}
+.report-section-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--navy);
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--gold);
+  margin-bottom: 18px;
+}
+.report-subsection {
+  margin-bottom: 20px;
+}
+.report-subsection-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy-light);
+  margin-bottom: 8px;
+}
+.report-text {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--text);
+  white-space: pre-line;
+}
+.report-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.badge-green { background: #e8f5e9; color: var(--success); border: 1px solid #c8e6c9; }
+.badge-yellow { background: #fff8e1; color: var(--warning); border: 1px solid #ffecb3; }
+.badge-red { background: #fce4ec; color: var(--danger); border: 1px solid #f8bbd0; }
+.badge-blue { background: #e3f2fd; color: var(--info); border: 1px solid #bbdefb; }
+.badge-gray { background: #f5f5f5; color: var(--text-secondary); border: 1px solid #e0e0e0; }
+
+.report-obligation-card {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: #fafbfc;
+}
+.report-obligation-card h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.report-obligation-card .ob-basis {
+  font-size: 12px;
+  color: var(--info);
+  margin-bottom: 10px;
+}
+.report-obligation-card .ob-content {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--text);
+}
+.report-obligation-card .ob-status {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: inline-block;
+}
+.ob-status-done { background: #e8f5e9; color: var(--success); }
+.ob-status-none { background: #fce4ec; color: var(--danger); }
+
+.report-checklist {
+  margin-top: 12px;
+  padding-left: 0;
+}
+.report-checklist li {
+  list-style: none;
+  font-size: 13px;
+  padding: 4px 0;
+  color: var(--text);
+}
+.report-checklist li::before { content: '□ '; color: var(--slate); }
+
+.report-risk-item {
+  padding: 12px 16px;
+  border-left: 3px solid var(--danger);
+  background: rgba(192,57,43,0.03);
+  margin-bottom: 10px;
+  border-radius: 0 6px 6px 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.report-risk-item.indirect {
+  border-left-color: var(--warning);
+  background: rgba(201,149,60,0.05);
+}
+.report-support-box {
+  background: rgba(36,113,163,0.05);
+  border: 1px solid rgba(36,113,163,0.15);
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.75;
+}
+.report-recommend-item {
+  padding: 14px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: var(--white);
+}
+.report-recommend-item h5 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.report-recommend-item p {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.report-footer {
+  background: var(--navy);
+  padding: 28px 32px;
+  text-align: center;
+}
+.report-footer .attorney-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: 10px;
+}
+.report-footer .attorney-info {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.8;
+}
+.report-footer a {
+  color: var(--gold-light);
+  text-decoration: none;
+}
+.report-footer a:hover { text-decoration: underline; }
+.report-footer .disclaimer-text {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .header-inner { padding: 14px 16px; }
+  .header-title { font-size: 16px; }
+  .header-badge { display: none; }
+  .container { padding: 20px 14px 40px; }
+  .intro-features { grid-template-columns: 1fr; max-width: 300px; }
+  .intro-screen h1 { font-size: 22px; }
+  .step-card { padding: 24px 18px; }
+  .step-title { font-size: 18px; }
+  .progress-step .step-label { font-size: 9px; }
+  .report-body { padding: 20px 16px; }
+  .report-header-band { padding: 24px 16px; }
+  .report-header-band h1 { font-size: 20px; }
+  .report-actions { flex-direction: column; }
+  .report-actions button { width: 100%; }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .site-header, .progress-bar, .report-actions, .btn-primary, .btn-secondary, .btn-gold { display: none !important; }
+  .report-screen { display: block !important; }
+  .report-container { box-shadow: none; border: none; }
+  body { background: white; }
+  .container { max-width: 100%; padding: 0; }
+}
+</style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <h1>인공지능기본법 컴플라이언스 체크포인트</h1>
-            <p class="subtitle">우리 회사 AI 서비스, 어떤 의무가 적용될까요?</p>
-            <div class="law-info">
-                인공지능 발전과 신뢰 기반 조성 등에 관한 기본법 (2026.1.22 시행)
-            </div>
-        </div>
-    </header>
 
-    <div class="progress-container">
-        <div class="progress-inner">
-            <div class="progress-header">
-                <span class="progress-text">진행률</span>
-                <span class="progress-percentage" id="progressPercent">0%</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-        </div>
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="header-icon">法</div>
+      <div>
+        <div class="header-title">AI 기본법 적용 분석기</div>
+        <div class="header-sub">인공지능 기본법 컴플라이언스 진단</div>
+      </div>
+    </div>
+    <div class="header-badge">v2.0</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-steps">
+      <div class="progress-line"><div class="progress-line-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-step active" data-step="1">
+        <div class="step-dot">1</div>
+        <div class="step-label">기업 정보</div>
+      </div>
+      <div class="progress-step" data-step="2">
+        <div class="step-dot">2</div>
+        <div class="step-label">AI 역할</div>
+      </div>
+      <div class="progress-step" data-step="3">
+        <div class="step-dot">3</div>
+        <div class="step-label">AI 유형</div>
+      </div>
+      <div class="progress-step" data-step="4">
+        <div class="step-dot">4</div>
+        <div class="step-label">고영향 판단</div>
+      </div>
+      <div class="progress-step" data-step="5">
+        <div class="step-dot">5</div>
+        <div class="step-label">의사결정</div>
+      </div>
+      <div class="progress-step" data-step="6">
+        <div class="step-dot">6</div>
+        <div class="step-label">내부 체계</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== INTRO SCREEN ==================== -->
+  <div class="intro-screen" id="introScreen">
+    <h1>AI 기본법 적용 분석기</h1>
+    <p class="lead">6단계 질문에 답하면, 귀사에 적용되는 AI 기본법상 의무와 이행 방안을 맞춤형 리포트로 제공합니다.</p>
+    <div class="intro-features">
+      <div class="intro-feature">
+        <div class="feat-icon">01</div>
+        <div class="feat-label">수범자 판단</div>
+        <div class="feat-desc">AI사업자 해당 여부</div>
+      </div>
+      <div class="intro-feature">
+        <div class="feat-icon">02</div>
+        <div class="feat-label">의무 매핑</div>
+        <div class="feat-desc">가이드라인 기반 상세 분석</div>
+      </div>
+      <div class="intro-feature">
+        <div class="feat-icon">03</div>
+        <div class="feat-label">리포트 생성</div>
+        <div class="feat-desc">맞춤형 분석 보고서</div>
+      </div>
+    </div>
+    <div class="intro-disclaimer">
+      ※ 본 도구는 AI 기본법에 대한 일반적 분석을 제공하며, 법률 자문을 대체하지 않습니다. 구체적 법률 적용은 전문가 상담을 권장합니다.
+    </div>
+    <button class="btn-primary" onclick="startAnalysis()">분석 시작하기</button>
+  </div>
+
+  <!-- ==================== STEP 1: 기업 정보 ==================== -->
+  <div class="step-card" id="step1">
+    <div class="step-header">
+      <div class="step-number">STEP 1 / 6</div>
+      <div class="step-title">기업 기본 정보</div>
+      <div class="step-desc">귀사의 업종과 규모를 선택해 주세요.</div>
     </div>
 
-    <main class="main-content">
-        <nav class="step-nav">
-            <div class="step-dot active" data-step="1">1</div>
-            <div class="step-dot" data-step="2">2</div>
-            <div class="step-dot" data-step="3">3</div>
-            <div class="step-dot" data-step="4">4</div>
-            <div class="step-dot" data-step="5">5</div>
-            <div class="step-dot" data-step="6">R</div>
-        </nav>
+    <div class="question-group">
+      <label class="question-label">
+        귀사의 업종을 선택해 주세요. <span class="question-hint">(복수 선택 가능)</span>
+      </label>
+      <div class="option-list" id="industryOptions">
+        <label class="option-item"><input type="checkbox" name="industry" value="금융·보험"><span class="option-indicator"></span><span class="option-text">금융·보험</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="의료·헬스케어"><span class="option-indicator"></span><span class="option-text">의료·헬스케어</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="제조·생산"><span class="option-indicator"></span><span class="option-text">제조·생산</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="IT·소프트웨어"><span class="option-indicator"></span><span class="option-text">IT·소프트웨어</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="유통·물류"><span class="option-indicator"></span><span class="option-text">유통·물류</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="교육"><span class="option-indicator"></span><span class="option-text">교육</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="에너지·인프라"><span class="option-indicator"></span><span class="option-text">에너지·인프라</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="공공·행정"><span class="option-indicator"></span><span class="option-text">공공·행정</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="HR·인사"><span class="option-indicator"></span><span class="option-text">HR·인사</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="교통·모빌리티"><span class="option-indicator"></span><span class="option-text">교통·모빌리티</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="미디어·콘텐츠"><span class="option-indicator"></span><span class="option-text">미디어·콘텐츠</span></label>
+        <label class="option-item"><input type="checkbox" name="industry" value="법률·컨설팅"><span class="option-indicator"></span><span class="option-text">법률·컨설팅</span></label>
+      </div>
+    </div>
 
-        <!-- Step 1 -->
-        <section class="section active" id="step1">
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>Step 1. 사업자 유형 확인</h2>
-                    <p>귀사의 AI 관련 사업 형태를 선택해주세요</p>
-                </div>
-                <div class="section-body">
-                    <div class="info-box">
-                        <h4>인공지능사업자란?</h4>
-                        <p>인공지능산업과 관련된 사업을 하는 자로서, <strong>인공지능개발사업자</strong>(AI를 개발하여 제공하는 자)와 <strong>인공지능이용사업자</strong>(개발된 AI를 이용하여 제품·서비스를 제공하는 자)로 구분됩니다. (법 제2조제7호)</p>
-                    </div>
+    <div class="question-group">
+      <label class="question-label">귀사의 규모는?</label>
+      <div class="option-list" id="sizeOptions">
+        <label class="option-item"><input type="radio" name="companySize" value="대기업"><span class="option-indicator"></span><span class="option-text">대기업 <small>매출 1조원 이상</small></span></label>
+        <label class="option-item"><input type="radio" name="companySize" value="중견기업"><span class="option-indicator"></span><span class="option-text">중견기업 <small>매출 1,000억 ~ 1조원</small></span></label>
+        <label class="option-item"><input type="radio" name="companySize" value="중소기업"><span class="option-indicator"></span><span class="option-text">중소기업 <small>매출 1,000억원 미만</small></span></label>
+        <label class="option-item"><input type="radio" name="companySize" value="스타트업"><span class="option-indicator"></span><span class="option-text">스타트업</span></label>
+        <label class="option-item"><input type="radio" name="companySize" value="공공기관"><span class="option-indicator"></span><span class="option-text">공공기관 / 국가기관</span></label>
+      </div>
+    </div>
 
-                    <div class="question">
-                        <p class="question-text">Q1. 귀사는 인공지능을 직접 개발합니까?</p>
-                        <div class="options">
-                            <div class="option">
-                                <input type="radio" name="q1_developer" id="q1_yes" value="yes">
-                                <label for="q1_yes">예, 직접 개발</label>
-                            </div>
-                            <div class="option">
-                                <input type="radio" name="q1_developer" id="q1_no" value="no">
-                                <label for="q1_no">아니오</label>
-                            </div>
-                        </div>
-                    </div>
+    <div class="step-nav">
+      <button class="btn-secondary" onclick="goBack(1)">← 처음으로</button>
+      <button class="btn-primary" onclick="goNext(1)">다음 →</button>
+    </div>
+  </div>
 
-                    <div class="question">
-                        <p class="question-text">Q2. 다른 사업자가 개발한 AI를 이용하여 제품·서비스를 제공합니까?</p>
-                        <div class="options">
-                            <div class="option">
-                                <input type="radio" name="q1_user" id="q2_yes" value="yes">
-                                <label for="q2_yes">예, 이용하여 제공</label>
-                            </div>
-                            <div class="option">
-                                <input type="radio" name="q1_user" id="q2_no" value="no">
-                                <label for="q2_no">아니오</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="nav-buttons">
-                <button class="btn btn-next" onclick="nextStep(2)">다음 단계</button>
-            </div>
-        </section>
+  <!-- ==================== STEP 2: AI 역할 ==================== -->
+  <div class="step-card" id="step2">
+    <div class="step-header">
+      <div class="step-number">STEP 2 / 6</div>
+      <div class="step-title">AI 활용 방식</div>
+      <div class="step-desc">귀사의 AI 관련 역할을 선택해 주세요.</div>
+    </div>
 
-        <!-- Step 2 -->
-        <section class="section" id="step2">
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>Step 2. 고영향 인공지능 해당 여부</h2>
-                    <p>귀사의 AI가 활용되는 영역을 모두 선택해주세요</p>
-                </div>
-                <div class="section-body">
-                    <div class="info-box warning">
-                        <h4>고영향 인공지능이란?</h4>
-                        <p>사람의 생명, 신체의 안전 및 기본권에 중대한 영향을 미치거나 위험을 초래할 우려가 있는 인공지능시스템으로, 아래 10개 영역 중 하나라도 해당되면 고영향 AI로 분류됩니다. (법 제2조제4호)</p>
-                    </div>
+    <div class="question-group">
+      <label class="question-label">귀사의 AI 관련 역할은?</label>
+      <div class="option-list">
+        <label class="option-item"><input type="radio" name="aiRole" value="개발제공"><span class="option-indicator"></span><span class="option-text">AI 모델/엔진을 직접 개발하여 타사에 제공<small>API, SDK 등으로 제공</small></span></label>
+        <label class="option-item"><input type="radio" name="aiRole" value="이용제공"><span class="option-indicator"></span><span class="option-text">타사의 AI를 활용하여 자체 AI 제품·서비스를 이용자에게 제공<small>타사 API 활용 등</small></span></label>
+        <label class="option-item"><input type="radio" name="aiRole" value="개발+이용"><span class="option-indicator"></span><span class="option-text">AI 모델을 자체 개발하고, 이를 기반으로 직접 서비스도 제공<small>개발+이용 겸업</small></span></label>
+        <label class="option-item"><input type="radio" name="aiRole" value="내부업무용"><span class="option-indicator"></span><span class="option-text">AI 도구를 내부 업무에만 활용<small>이용자에게 AI 서비스를 제공하지 않음</small></span></label>
+        <label class="option-item"><input type="radio" name="aiRole" value="무관"><span class="option-indicator"></span><span class="option-text">AI와 관련 없음</span></label>
+      </div>
+    </div>
 
-                    <div class="question">
-                        <p class="question-text">Q3. 귀사의 AI가 활용되는 영역을 모두 선택하세요:</p>
-                        <div class="checkbox-group" id="highImpactAreas">
-                            <div class="checkbox-item" data-value="energy">
-                                <input type="checkbox" name="high_impact" id="hi_energy" value="energy">
-                                <div class="checkbox-label">
-                                    <strong>에너지 공급</strong>
-                                    <span class="law-ref">「에너지법」 제2조제1호에 따른 에너지의 공급</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="water">
-                                <input type="checkbox" name="high_impact" id="hi_water" value="water">
-                                <div class="checkbox-label">
-                                    <strong>먹는물 생산</strong>
-                                    <span class="law-ref">「먹는물관리법」 제3조제1호에 따른 먹는물의 생산 공정</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="healthcare">
-                                <input type="checkbox" name="high_impact" id="hi_healthcare" value="healthcare">
-                                <div class="checkbox-label">
-                                    <strong>보건의료 제공</strong>
-                                    <span class="law-ref">「보건의료기본법」 제3조제1호에 따른 보건의료의 제공 및 이용체계 구축·운영</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="medical_device">
-                                <input type="checkbox" name="high_impact" id="hi_medical" value="medical_device">
-                                <div class="checkbox-label">
-                                    <strong>의료기기 · 디지털의료기기</strong>
-                                    <span class="law-ref">「의료기기법」 및 「디지털의료제품법」에 따른 의료기기의 개발 및 이용</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="nuclear">
-                                <input type="checkbox" name="high_impact" id="hi_nuclear" value="nuclear">
-                                <div class="checkbox-label">
-                                    <strong>원자력시설 안전관리</strong>
-                                    <span class="law-ref">핵물질 및 원자력시설의 안전한 관리 및 운영</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="biometric">
-                                <input type="checkbox" name="high_impact" id="hi_biometric" value="biometric">
-                                <div class="checkbox-label">
-                                    <strong>범죄수사 생체인식</strong>
-                                    <span class="law-ref">범죄 수사나 체포 업무를 위한 생체인식정보(얼굴·지문·홍채 등)의 분석·활용</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="decision">
-                                <input type="checkbox" name="high_impact" id="hi_decision" value="decision">
-                                <div class="checkbox-label">
-                                    <strong>채용 · 대출심사 등</strong>
-                                    <span class="law-ref">채용, 대출 심사 등 개인의 권리·의무 관계에 중대한 영향을 미치는 판단 또는 평가</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="traffic">
-                                <input type="checkbox" name="high_impact" id="hi_traffic" value="traffic">
-                                <div class="checkbox-label">
-                                    <strong>교통수단 · 시설 · 체계</strong>
-                                    <span class="law-ref">「교통안전법」에 따른 교통수단, 교통시설, 교통체계의 주요한 작동 및 운영</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="public_service">
-                                <input type="checkbox" name="high_impact" id="hi_public" value="public_service">
-                                <div class="checkbox-label">
-                                    <strong>공공서비스 의사결정</strong>
-                                    <span class="law-ref">공공서비스 제공에 필요한 자격 확인·결정 또는 비용징수 등 국가기관등의 의사결정</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="education">
-                                <input type="checkbox" name="high_impact" id="hi_education" value="education">
-                                <div class="checkbox-label">
-                                    <strong>교육 학생평가</strong>
-                                    <span class="law-ref">유아교육·초등교육 및 중등교육에서의 학생 평가</span>
-                                </div>
-                            </div>
-                            <div class="checkbox-item" data-value="none">
-                                <input type="checkbox" name="high_impact" id="hi_none" value="none">
-                                <div class="checkbox-label">
-                                    <strong>해당 없음</strong>
-                                    <span class="law-ref">위 영역 중 어느 것에도 해당하지 않음</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="nav-buttons">
-                <button class="btn btn-prev" onclick="prevStep(1)">이전</button>
-                <button class="btn btn-next" onclick="nextStep(3)">다음 단계</button>
-            </div>
-        </section>
+    <div class="conditional" id="apiQuestion">
+      <div class="question-group">
+        <label class="question-label">타사의 AI를 API 형태로 이용하고 있습니까?</label>
+        <div class="option-list">
+          <label class="option-item"><input type="radio" name="usesApi" value="yes"><span class="option-indicator"></span><span class="option-text">예 — API를 통해 타사 AI 모델을 활용</span></label>
+          <label class="option-item"><input type="radio" name="usesApi" value="no"><span class="option-indicator"></span><span class="option-text">아니요 — 자체 서버에 설치·운영</span></label>
+          <label class="option-item"><input type="radio" name="usesApi" value="na"><span class="option-indicator"></span><span class="option-text">해당없음</span></label>
+        </div>
+      </div>
+    </div>
 
-        <!-- Step 3 -->
-        <section class="section" id="step3">
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>Step 3. 안전성 확보 의무 (대규모 AI)</h2>
-                    <p>인공지능시스템의 기술적 특성을 확인합니다</p>
-                </div>
-                <div class="section-body">
-                    <div class="info-box">
-                        <h4>안전성 확보 의무 적용 기준</h4>
-                        <p>학습에 사용된 누적 연산량이 <strong>10의 26승 FLOPs</strong>(부동소수점연산) 이상이고, 최첨단 기술을 적용하며, 기본권에 광범위하고 중대한 영향을 미칠 우려가 있는 AI에 적용됩니다. (법 제32조, 시행령 제24조)</p>
-                    </div>
+    <div class="conditional" id="modelScaleQuestion">
+      <div class="question-group">
+        <label class="question-label">귀사가 개발하는 AI 모델의 학습 규모는?</label>
+        <div class="option-list">
+          <label class="option-item"><input type="radio" name="modelScale" value="대규모"><span class="option-indicator"></span><span class="option-text">대규모 파운데이션 모델<small>GPT, Claude, Gemini급</small></span></label>
+          <label class="option-item"><input type="radio" name="modelScale" value="중규모"><span class="option-indicator"></span><span class="option-text">중규모 특화 모델<small>산업별 특화, 파인튜닝 중심</small></span></label>
+          <label class="option-item"><input type="radio" name="modelScale" value="소규모"><span class="option-indicator"></span><span class="option-text">소규모 모델<small>전통 ML, 단순 분류·예측</small></span></label>
+          <label class="option-item"><input type="radio" name="modelScale" value="모름"><span class="option-indicator"></span><span class="option-text">모름 / 해당없음</span></label>
+        </div>
+      </div>
+    </div>
 
-                    <div class="question">
-                        <p class="question-text">Q4. 귀사 AI의 학습에 사용된 누적 연산량이 10의 26승 FLOPs 이상입니까?</p>
-                        <div class="question-hint">대부분의 기업용 AI 서비스는 해당되지 않습니다. GPT-4급 대규모 언어모델 수준에서 해당됩니다.</div>
-                        <div class="options">
-                            <div class="option">
-                                <input type="radio" name="q4_flops" id="q4_yes" value="yes">
-                                <label for="q4_yes">예</label>
-                            </div>
-                            <div class="option">
-                                <input type="radio" name="q4_flops" id="q4_no" value="no">
-                                <label for="q4_no">아니오</label>
-                            </div>
-                            <div class="option">
-                                <input type="radio" name="q4_flops" id="q4_unknown" value="unknown">
-                                <label for="q4_unknown">모름</label>
-                            </div>
-                        </div>
-                    </div>
+    <div class="step-nav">
+      <button class="btn-secondary" onclick="goBack(2)">← 이전</button>
+      <button class="btn-primary" onclick="goNext(2)">다음 →</button>
+    </div>
+  </div>
 
-                    <div class="question">
-                        <p class="question-text">Q5. 현재 최첨단 수준의 AI 기술을 적용하여 구성·운영됩니까?</p>
-                        <div class="options">
-                            <div class="option">
-                                <input type="radio" name="q5_cutting" id="q5_yes" value="yes">
-                                <label for="q5_yes">예</label>
-                            </div>
-                            <div class="option">
-                                <input type="radio" name="q5_cutting" id="q5_no" value="no">
-                                <label for="q5_no">아니오</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="nav-buttons">
-                <button class="btn btn-prev" onclick="prevStep(2)">이전</button>
-                <button class="btn btn-next" onclick="nextStep(4)">다음 단계</button>
-            </div>
-        </section>
+  <!-- ==================== STEP 3: AI 유형 ==================== -->
+  <div class="step-card" id="step3">
+    <div class="step-header">
+      <div class="step-number">STEP 3 / 6</div>
+      <div class="step-title">AI 시스템 유형</div>
+      <div class="step-desc">귀사 AI 시스템의 특성을 선택해 주세요.</div>
+    </div>
 
-        <!-- Step 4 -->
-        <section class="section" id="step4">
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>Step 4. 투명성 확보 의무</h2>
-                    <p>AI 서비스의 성격에 따른 투명성 의무를 확인합니다</p>
-                </div>
-                <div class="section-body">
-                    <div class="info-box">
-                        <h4>투명성 확보 의무란?</h4>
-                        <p>이용자가 AI 기반 제품·서비스를 이용하고 있다는 사실과, 제공되는 결과물이 AI에 의해 생성된 것임을 명확히 인식할 수 있도록 하는 의무입니다. (법 제31조)</p>
-                    </div>
+    <div class="question-group">
+      <label class="question-label">귀사의 AI 시스템 유형을 선택해 주세요. <span class="question-hint">(복수 선택 가능)</span></label>
+      <div class="option-list">
+        <label class="option-item"><input type="checkbox" name="aiTypes" value="텍스트생성"><span class="option-indicator"></span><span class="option-text">텍스트 생성 <small>챗봇, 작문, 번역 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="aiTypes" value="이미지생성"><span class="option-indicator"></span><span class="option-text">이미지·영상 생성 <small>이미지 생성, 영상 편집 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="aiTypes" value="음성생성"><span class="option-indicator"></span><span class="option-text">음성·음향 생성 <small>TTS, 음악 생성 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="aiTypes" value="분류예측"><span class="option-indicator"></span><span class="option-text">분류·예측 <small>추천, 분류, 예측 모델 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="aiTypes" value="자동의사결정"><span class="option-indicator"></span><span class="option-text">자동 의사결정 <small>심사, 평가, 승인 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="aiTypes" value="생체인식"><span class="option-indicator"></span><span class="option-text">생체인식 <small>얼굴인식, 지문, 홍채 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="aiTypes" value="자율제어"><span class="option-indicator"></span><span class="option-text">자율 제어 <small>자율주행, 로봇 제어 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="aiTypes" value="데이터분석"><span class="option-indicator"></span><span class="option-text">데이터 분석·인사이트 <small>BI, 분석 도구 등</small></span></label>
+      </div>
+    </div>
 
-                    <div class="question">
-                        <p class="question-text">Q6. 귀사는 생성형 AI를 이용한 제품·서비스를 제공합니까?</p>
-                        <div class="question-hint">생성형 AI: 텍스트, 이미지, 오디오, 비디오 등을 생성하는 AI (예: ChatGPT, DALL-E, Midjourney 등)</div>
-                        <div class="options">
-                            <div class="option">
-                                <input type="radio" name="q6_generative" id="q6_yes" value="yes">
-                                <label for="q6_yes">예</label>
-                            </div>
-                            <div class="option">
-                                <input type="radio" name="q6_generative" id="q6_no" value="no">
-                                <label for="q6_no">아니오</label>
-                            </div>
-                        </div>
-                    </div>
+    <div class="conditional" id="exportQuestion">
+      <div class="question-group">
+        <label class="question-label">생성된 결과물을 이용자가 다운로드·공유할 수 있습니까?</label>
+        <div class="option-list">
+          <label class="option-item"><input type="radio" name="canExport" value="yes"><span class="option-indicator"></span><span class="option-text">예 — 다운로드/공유/외부 반출 기능 있음</span></label>
+          <label class="option-item"><input type="radio" name="canExport" value="no"><span class="option-indicator"></span><span class="option-text">아니요 — 서비스 화면 내에서만 확인 가능</span></label>
+        </div>
+      </div>
+    </div>
 
-                    <div class="question">
-                        <p class="question-text">Q7. AI로 실제와 구분하기 어려운 가상의 결과물(딥페이크 등)을 생성합니까?</p>
-                        <div class="question-hint">실제 인물의 모습, 목소리 등을 합성하거나 가상으로 생성하는 경우</div>
-                        <div class="options">
-                            <div class="option">
-                                <input type="radio" name="q7_deepfake" id="q7_yes" value="yes">
-                                <label for="q7_yes">예</label>
-                            </div>
-                            <div class="option">
-                                <input type="radio" name="q7_deepfake" id="q7_no" value="no">
-                                <label for="q7_no">아니오</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="nav-buttons">
-                <button class="btn btn-prev" onclick="prevStep(3)">이전</button>
-                <button class="btn btn-next" onclick="nextStep(5)">다음 단계</button>
-            </div>
-        </section>
+    <div class="conditional" id="deepfakeQuestion">
+      <div class="question-group">
+        <label class="question-label">생성 결과물 중 실제와 구분하기 어려운 사실적 이미지·영상·음성이 포함될 수 있습니까?</label>
+        <div class="option-list">
+          <label class="option-item"><input type="radio" name="isDeepfake" value="yes"><span class="option-indicator"></span><span class="option-text">예 — 사실적 수준의 결과물 생성 가능</span></label>
+          <label class="option-item"><input type="radio" name="isDeepfake" value="no"><span class="option-indicator"></span><span class="option-text">아니요 — 명백히 AI 생성물로 구분 가능<small>캐릭터, 일러스트 등</small></span></label>
+          <label class="option-item"><input type="radio" name="isDeepfake" value="uncertain"><span class="option-indicator"></span><span class="option-text">확실하지 않음</span></label>
+        </div>
+      </div>
+    </div>
 
-        <!-- Step 5 -->
-        <section class="section" id="step5">
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>Step 5. 추가 확인 사항</h2>
-                    <p>규모 및 운영 현황을 확인합니다</p>
-                </div>
-                <div class="section-body">
-                    <div class="question">
-                        <p class="question-text">Q8. 귀사는 국내에 사업장 또는 영업소가 있습니까?</p>
-                        <div class="options">
-                            <div class="option">
-                                <input type="radio" name="q8_domestic" id="q8_yes" value="yes">
-                                <label for="q8_yes">예</label>
-                            </div>
-                            <div class="option">
-                                <input type="radio" name="q8_domestic" id="q8_no" value="no">
-                                <label for="q8_no">아니오 (해외사업자)</label>
-                            </div>
-                        </div>
-                    </div>
+    <div class="step-nav">
+      <button class="btn-secondary" onclick="goBack(3)">← 이전</button>
+      <button class="btn-primary" onclick="goNext(3)">다음 →</button>
+    </div>
+  </div>
 
-                    <div class="question">
-                        <p class="question-text">Q9. (해외사업자인 경우) 다음 중 해당 사항이 있습니까?</p>
-                        <div class="checkbox-group">
-                            <div class="checkbox-item" data-value="revenue_1t">
-                                <input type="checkbox" name="overseas" id="ov_revenue1" value="revenue_1t">
-                                <div class="checkbox-label">전년도 매출액 1조원 이상</div>
-                            </div>
-                            <div class="checkbox-item" data-value="revenue_100b">
-                                <input type="checkbox" name="overseas" id="ov_revenue2" value="revenue_100b">
-                                <div class="checkbox-label">AI 서비스 부문 전년도 매출액 100억원 이상</div>
-                            </div>
-                            <div class="checkbox-item" data-value="users_1m">
-                                <input type="checkbox" name="overseas" id="ov_users" value="users_1m">
-                                <div class="checkbox-label">직전 3개월간 국내 일평균 이용자 수 100만명 이상</div>
-                            </div>
-                            <div class="checkbox-item" data-value="none">
-                                <input type="checkbox" name="overseas" id="ov_none" value="none">
-                                <div class="checkbox-label">해당 없음</div>
-                            </div>
-                        </div>
-                        <div class="question-hint" style="margin-top: 1rem;">위 기준 중 하나라도 해당되면 국내대리인 지정이 필요합니다. (법 제36조)</div>
-                    </div>
+  <!-- ==================== STEP 4: 고영향 판단 ==================== -->
+  <div class="step-card" id="step4">
+    <div class="step-header">
+      <div class="step-number">STEP 4 / 6</div>
+      <div class="step-title">AI 활용 영역 (고영향 인공지능 판단)</div>
+      <div class="step-desc">귀사의 AI가 활용되는 영역을 모두 선택해 주세요.</div>
+    </div>
 
-                    <div class="question">
-                        <p class="question-text">Q10. 귀사는 공공기관입니까?</p>
-                        <div class="options">
-                            <div class="option">
-                                <input type="radio" name="q10_public" id="q10_yes" value="yes">
-                                <label for="q10_yes">예</label>
-                            </div>
-                            <div class="option">
-                                <input type="radio" name="q10_public" id="q10_no" value="no">
-                                <label for="q10_no">아니오</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="nav-buttons">
-                <button class="btn btn-prev" onclick="prevStep(4)">이전</button>
-                <button class="btn btn-result" onclick="showResults()">결과 확인</button>
-            </div>
-        </section>
+    <div class="info-box">
+      법 제2조 제4호에 따라, 아래 영역에서 사람의 생명·신체·기본권에 중대한 영향을 미치는 AI는 "고영향 인공지능"에 해당합니다.
+    </div>
 
-        <!-- Results -->
-        <section class="section" id="results">
-            <div class="result-card">
-                <div class="result-header" id="resultHeader">
-                    <div class="result-icon" id="resultIcon">A</div>
-                    <h2 class="result-title" id="resultTitle">분석 결과</h2>
-                    <p id="resultSubtitle">귀사에 적용되는 의무사항입니다</p>
-                </div>
-                <div class="result-body" id="resultBody"></div>
-            </div>
+    <div class="question-group">
+      <label class="question-label">해당 영역을 모두 선택해 주세요. <span class="question-hint">(복수 선택 가능)</span></label>
+      <div class="option-list">
+        <label class="option-item"><input type="checkbox" name="highImpact" value="에너지 공급"><span class="option-indicator"></span><span class="option-text">에너지 공급 관련 의사결정</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="먹는물 생산"><span class="option-indicator"></span><span class="option-text">먹는물 생산 공정 관리</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="보건의료"><span class="option-indicator"></span><span class="option-text">보건의료 서비스 제공</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="의료기기"><span class="option-indicator"></span><span class="option-text">의료기기·디지털의료기기 개발·이용</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="핵물질·원자력"><span class="option-indicator"></span><span class="option-text">핵물질·원자력시설 관리·운영</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="범죄수사 생체인식"><span class="option-indicator"></span><span class="option-text">범죄 수사를 위한 생체인식(얼굴·지문·홍채) 분석</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="채용·대출심사"><span class="option-indicator"></span><span class="option-text">채용, 대출 심사 등 개인 권리·의무에 중대한 영향을 미치는 판단</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="교통"><span class="option-indicator"></span><span class="option-text">교통수단·시설·체계의 주요 운영</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="공공서비스"><span class="option-indicator"></span><span class="option-text">공공서비스 자격 확인·비용 징수 등 국가기관 의사결정</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="학생평가"><span class="option-indicator"></span><span class="option-text">유아·초등·중등교육에서의 학생 평가</span></label>
+        <label class="option-item"><input type="checkbox" name="highImpact" value="없음"><span class="option-indicator"></span><span class="option-text">위에 해당하는 영역이 없음</span></label>
+      </div>
+    </div>
 
-            <div class="action-buttons">
-                <button class="btn-action" onclick="window.print()">인쇄하기</button>
-                <button class="btn-action btn-restart" onclick="restartCheck()">다시 체크하기</button>
-            </div>
-        </section>
-    </main>
+    <div class="conditional" id="impactLevelQuestion">
+      <div class="question-group">
+        <label class="question-label">해당 영역에서 AI가 의사결정에 미치는 영향의 수준을 선택해 주세요.</label>
+        <div class="option-list">
+          <label class="option-item"><input type="radio" name="impactLevel" value="level1"><span class="option-indicator"></span><span class="option-text">AI 결과물이 최종 판단에 실질적으로 반영됨<small>예: AI 점수가 합격·불합격에 직접 영향</small></span></label>
+          <label class="option-item"><input type="radio" name="impactLevel" value="level2"><span class="option-indicator"></span><span class="option-text">AI 결과물이 중요한 참고자료로 활용됨<small>예: 담당자가 AI 분석을 참고하되 별도 절차로 최종 결정</small></span></label>
+          <label class="option-item"><input type="radio" name="impactLevel" value="level3"><span class="option-indicator"></span><span class="option-text">AI 결과물이 단순 보조·편의 기능에 한정됨<small>예: 데이터 정리, 일정 관리 등 의사결정과 무관</small></span></label>
+        </div>
+      </div>
+    </div>
 
-    <footer class="footer">
-        <p>본 체크포인트 도구는 「인공지능 발전과 신뢰 기반 조성 등에 관한 기본법」(2026.1.22 시행)을 기반으로 제작되었습니다.</p>
-        <p style="margin-top: 0.5rem;">참고 자료: <a href="#">인공지능 투명성 확보 가이드라인</a> | <a href="#">인공지능 안전성 확보 가이드라인</a> | <a href="#">인공지능 영향평가 가이드라인</a></p>
-        <p style="margin-top: 1rem; color: var(--text-muted);">본 도구는 참고용이며, 정확한 법적 판단은 전문가와 상담하시기 바랍니다.</p>
-    </footer>
+    <div class="step-nav">
+      <button class="btn-secondary" onclick="goBack(4)">← 이전</button>
+      <button class="btn-primary" onclick="goNext(4)">다음 →</button>
+    </div>
+  </div>
 
-    <script>
-        let currentStep = 1;
-        const totalSteps = 5;
+  <!-- ==================== STEP 5: 의사결정 수준 ==================== -->
+  <div class="step-card" id="step5">
+    <div class="step-header">
+      <div class="step-number">STEP 5 / 6</div>
+      <div class="step-title">AI 의사결정 범위 & 데이터</div>
+      <div class="step-desc">AI의 의사결정 수준과 처리 데이터 유형을 선택해 주세요.</div>
+    </div>
 
-        document.querySelectorAll('.checkbox-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                if (e.target.type === 'checkbox') return;
-                
-                const checkbox = this.querySelector('input[type="checkbox"]');
-                checkbox.checked = !checkbox.checked;
-                this.classList.toggle('checked', checkbox.checked);
-                
-                handleCheckboxLogic(checkbox);
-                updateProgress();
-            });
+    <div class="question-group">
+      <label class="question-label">귀사의 AI가 내리는 결정의 수준은?</label>
+      <div class="option-list">
+        <label class="option-item"><input type="radio" name="decisionLevel" value="참고용"><span class="option-indicator"></span><span class="option-text">참고용 추천·제안만 제공<small>최종 결정은 사람</small></span></label>
+        <label class="option-item"><input type="radio" name="decisionLevel" value="AI결정+사람검토"><span class="option-indicator"></span><span class="option-text">AI가 결정하되 사람이 검토·승인</span></label>
+        <label class="option-item"><input type="radio" name="decisionLevel" value="AI자동결정"><span class="option-indicator"></span><span class="option-text">AI가 자동으로 최종 결정<small>사람 개입 없음</small></span></label>
+      </div>
+    </div>
+
+    <div class="question-group">
+      <label class="question-label">귀사의 AI가 처리하는 데이터 유형은? <span class="question-hint">(복수 선택 가능)</span></label>
+      <div class="option-list">
+        <label class="option-item"><input type="checkbox" name="dataTypes" value="일반업무"><span class="option-indicator"></span><span class="option-text">일반 업무 데이터 <small>재고, 매출 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="dataTypes" value="개인정보"><span class="option-indicator"></span><span class="option-text">개인정보 <small>이름, 연락처, 이메일 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="dataTypes" value="민감정보"><span class="option-indicator"></span><span class="option-text">민감정보 <small>건강, 인종, 정치적 견해, 범죄경력 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="dataTypes" value="생체인식"><span class="option-indicator"></span><span class="option-text">생체인식정보 <small>얼굴, 지문, 홍채, 음성 등</small></span></label>
+        <label class="option-item"><input type="checkbox" name="dataTypes" value="아동청소년"><span class="option-indicator"></span><span class="option-text">아동·청소년 관련 정보</span></label>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn-secondary" onclick="goBack(5)">← 이전</button>
+      <button class="btn-primary" onclick="goNext(5)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 6: 내부 체계 ==================== -->
+  <div class="step-card" id="step6">
+    <div class="step-header">
+      <div class="step-number">STEP 6 / 6</div>
+      <div class="step-title">내부 체계 현황</div>
+      <div class="step-desc">귀사의 AI 관련 내부 체계를 선택해 주세요.</div>
+    </div>
+
+    <div class="question-group">
+      <label class="question-label">다음 중 귀사에 있는 체계를 모두 선택해 주세요. <span class="question-hint">(복수 선택 가능)</span></label>
+      <div class="option-list">
+        <label class="option-item"><input type="checkbox" name="existingSystems" value="윤리가이드"><span class="option-indicator"></span><span class="option-text">AI 윤리 가이드라인 또는 원칙</span></label>
+        <label class="option-item"><input type="checkbox" name="existingSystems" value="위험관리"><span class="option-indicator"></span><span class="option-text">AI 위험관리 정책·조직</span></label>
+        <label class="option-item"><input type="checkbox" name="existingSystems" value="이용자보호"><span class="option-indicator"></span><span class="option-text">AI 관련 이용자 보호 방안</span></label>
+        <label class="option-item"><input type="checkbox" name="existingSystems" value="설명절차"><span class="option-indicator"></span><span class="option-text">AI 결과에 대한 설명 절차</span></label>
+        <label class="option-item"><input type="checkbox" name="existingSystems" value="관리감독자"><span class="option-indicator"></span><span class="option-text">AI 관리·감독 담당자 지정</span></label>
+        <label class="option-item"><input type="checkbox" name="existingSystems" value="문서보관"><span class="option-indicator"></span><span class="option-text">AI 관련 문서 보관 체계</span></label>
+        <label class="option-item"><input type="checkbox" name="existingSystems" value="없음"><span class="option-indicator"></span><span class="option-text">위에 해당하는 것이 없음</span></label>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn-secondary" onclick="goBack(6)">← 이전</button>
+      <button class="btn-gold" onclick="generateReport()"> 리포트 생성</button>
+    </div>
+  </div>
+
+  <!-- ==================== REPORT SCREEN ==================== -->
+  <div class="report-screen" id="reportScreen">
+    <div class="report-actions">
+      <button class="btn-primary" onclick="downloadPDF()">PDF 다운로드</button>
+      <button class="btn-secondary" onclick="restartAnalysis()">다시 분석하기</button>
+    </div>
+    <div class="report-container" id="reportContainer">
+      <!-- dynamically generated -->
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+// ===== STATE =====
+let currentStep = 0; // 0 = intro
+const answers = {};
+
+// ===== OPTION CLICK HANDLERS =====
+// Listen on the <input> change event, which fires AFTER the browser has
+// already updated checked/unchecked state.  No double-toggle possible.
+document.querySelectorAll('.option-item input').forEach(input => {
+  input.addEventListener('change', function() {
+    if (this.type === 'radio') {
+      // Update visual state for ALL radios in the same group
+      document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
+        r.closest('.option-item').classList.toggle('selected', r.checked);
+      });
+    } else {
+      // Checkbox – update this item's visual state
+      this.closest('.option-item').classList.toggle('selected', this.checked);
+
+      // "없음" exclusive logic
+      if (this.value === '없음' && this.checked) {
+        document.querySelectorAll(`input[name="${this.name}"]`).forEach(cb => {
+          if (cb !== this) {
+            cb.checked = false;
+            cb.closest('.option-item').classList.remove('selected');
+          }
         });
-
-        document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const item = this.closest('.checkbox-item');
-                item.classList.toggle('checked', this.checked);
-                handleCheckboxLogic(this);
-                updateProgress();
-            });
-        });
-
-        function handleCheckboxLogic(checkbox) {
-            const checkboxName = checkbox.name;
-            if (checkbox.value === 'none' && checkbox.checked) {
-                document.querySelectorAll(`input[name="${checkboxName}"]`).forEach(cb => {
-                    if (cb.value !== 'none') {
-                        cb.checked = false;
-                        cb.closest('.checkbox-item').classList.remove('checked');
-                    }
-                });
-            } else if (checkbox.value !== 'none' && checkbox.checked) {
-                const noneCheckbox = document.querySelector(`input[name="${checkboxName}"][value="none"]`);
-                if (noneCheckbox) {
-                    noneCheckbox.checked = false;
-                    noneCheckbox.closest('.checkbox-item').classList.remove('checked');
-                }
-            }
+      } else if (this.value !== '없음' && this.checked) {
+        const none = document.querySelector(`input[name="${this.name}"][value="없음"]`);
+        if (none) {
+          none.checked = false;
+          none.closest('.option-item').classList.remove('selected');
         }
+      }
+    }
 
-        function updateProgress() {
-            const answeredQuestions = document.querySelectorAll('input:checked').length;
-            const totalQuestions = 12;
-            const progress = Math.min(Math.round((answeredQuestions / totalQuestions) * 100), 100);
-            
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressPercent').textContent = progress + '%';
-        }
+    // Show or hide conditional follow-up questions
+    handleConditionals(this.name);
+  });
+});
 
-        function nextStep(step) {
-            document.getElementById('step' + currentStep).classList.remove('active');
-            document.getElementById('step' + step).classList.add('active');
-            
-            document.querySelectorAll('.step-dot').forEach(dot => {
-                const dotStep = parseInt(dot.dataset.step);
-                if (dotStep < step) {
-                    dot.classList.add('completed');
-                    dot.classList.remove('active');
-                } else if (dotStep === step) {
-                    dot.classList.add('active');
-                    dot.classList.remove('completed');
-                } else {
-                    dot.classList.remove('active', 'completed');
-                }
-            });
-            
-            currentStep = step;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+function handleConditionals(name) {
+  // Step 2: Show API question for 이용사업자
+  if (name === 'aiRole') {
+    const role = getRadio('aiRole');
+    toggle('apiQuestion', role === '이용제공');
+    toggle('modelScaleQuestion', role === '개발제공' || role === '개발+이용');
+  }
+  // Step 3: Show export/deepfake for generative
+  if (name === 'aiTypes') {
+    const types = getChecked('aiTypes');
+    const gen = types.some(t => ['텍스트생성','이미지생성','음성생성'].includes(t));
+    toggle('exportQuestion', gen);
+    toggle('deepfakeQuestion', gen);
+  }
+  // Step 4: Show impact level if area selected
+  if (name === 'highImpact') {
+    const areas = getChecked('highImpact');
+    const hasArea = areas.length > 0 && !areas.includes('없음');
+    toggle('impactLevelQuestion', hasArea);
+  }
+}
 
-        function prevStep(step) {
-            nextStep(step);
-        }
+function toggle(id, show) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('visible', show);
+}
 
-        document.querySelectorAll('input[type="radio"]').forEach(radio => {
-            radio.addEventListener('change', updateProgress);
-        });
+function getRadio(name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  return checked ? checked.value : null;
+}
+function getChecked(name) {
+  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(i => i.value);
+}
 
-        document.querySelectorAll('.step-dot').forEach(dot => {
-            dot.addEventListener('click', () => {
-                const step = dot.dataset.step;
-                if (step === 'R') {
-                    showResults();
-                } else {
-                    nextStep(parseInt(step));
-                }
-            });
-        });
+// ===== NAVIGATION =====
+function startAnalysis() {
+  document.getElementById('introScreen').style.display = 'none';
+  document.getElementById('progressBar').classList.add('active');
+  showStep(1);
+}
 
-        function showResults() {
-            const isDeveloper = document.querySelector('input[name="q1_developer"]:checked')?.value === 'yes';
-            const isUser = document.querySelector('input[name="q1_user"]:checked')?.value === 'yes';
-            
-            const highImpactAreas = [];
-            document.querySelectorAll('input[name="high_impact"]:checked').forEach(cb => {
-                if (cb.value !== 'none') highImpactAreas.push(cb.value);
-            });
-            const isHighImpact = highImpactAreas.length > 0;
-            
-            const isLargeScale = document.querySelector('input[name="q4_flops"]:checked')?.value === 'yes';
-            const isCuttingEdge = document.querySelector('input[name="q5_cutting"]:checked')?.value === 'yes';
-            
-            const isGenerative = document.querySelector('input[name="q6_generative"]:checked')?.value === 'yes';
-            const isDeepfake = document.querySelector('input[name="q7_deepfake"]:checked')?.value === 'yes';
-            
-            const isDomestic = document.querySelector('input[name="q8_domestic"]:checked')?.value === 'yes';
-            const isPublicOrg = document.querySelector('input[name="q10_public"]:checked')?.value === 'yes';
-            
-            const overseasConditions = [];
-            document.querySelectorAll('input[name="overseas"]:checked').forEach(cb => {
-                if (cb.value !== 'none') overseasConditions.push(cb.value);
-            });
-            const needsRepresentative = !isDomestic && overseasConditions.length > 0;
+function showStep(n) {
+  // Hide all steps
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+  const target = document.getElementById('step' + n);
+  if (target) {
+    target.classList.add('active');
+    target.style.animation = 'none';
+    target.offsetHeight; // reflow
+    target.style.animation = 'fadeUp 0.4s ease';
+  }
+  currentStep = n;
+  updateProgress(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-            let riskLevel = 'low';
-            if (isHighImpact && (isLargeScale || isCuttingEdge)) {
-                riskLevel = 'high';
-            } else if (isHighImpact || isGenerative || isDeepfake) {
-                riskLevel = 'medium';
-            }
+function updateProgress(step) {
+  document.querySelectorAll('.progress-step').forEach(ps => {
+    const s = parseInt(ps.dataset.step);
+    ps.classList.remove('active', 'done');
+    if (s < step) ps.classList.add('done');
+    if (s === step) ps.classList.add('active');
+  });
+  const fill = ((step - 1) / 5) * 100;
+  document.getElementById('progressFill').style.width = fill + '%';
+}
 
-            const resultHeader = document.getElementById('resultHeader');
-            const resultIcon = document.getElementById('resultIcon');
-            const resultTitle = document.getElementById('resultTitle');
-            const resultSubtitle = document.getElementById('resultSubtitle');
+function goNext(step) {
+  // Validate & collect
+  if (!validate(step)) return;
+  collectAnswers(step);
 
-            if (riskLevel === 'high') {
-                resultHeader.className = 'result-header high-risk';
-                resultIcon.textContent = 'A';
-                resultTitle.textContent = '높은 수준의 규제 적용';
-                resultSubtitle.textContent = '고영향 AI 및 대규모 AI 관련 의무가 적용됩니다';
-            } else if (riskLevel === 'medium') {
-                resultHeader.className = 'result-header medium-risk';
-                resultIcon.textContent = 'B';
-                resultTitle.textContent = '중간 수준의 규제 적용';
-                resultSubtitle.textContent = '특정 영역에 대한 의무가 적용됩니다';
-            } else {
-                resultHeader.className = 'result-header low-risk';
-                resultIcon.textContent = 'C';
-                resultTitle.textContent = '기본 수준의 규제 적용';
-                resultSubtitle.textContent = '일반적인 AI 윤리 준수 권고사항이 적용됩니다';
-            }
+  // Skip logic: if aiRole is '무관' or (내부업무용 && no high impact area)
+  if (step === 2) {
+    const role = answers.aiRole;
+    if (role === '무관') {
+      // Jump directly to report
+      generateReport();
+      return;
+    }
+  }
 
-            let resultHTML = '';
+  // Normal flow
+  const maxStep = 6;
+  if (step < maxStep) {
+    showStep(step + 1);
+  }
+}
 
-            resultHTML += `
-                <div class="result-section">
-                    <h3>귀사의 사업자 유형</h3>
-                    <div class="obligation-item">
-                        <div class="obligation-content">
-                            <h4>${isDeveloper ? '인공지능개발사업자' : ''}${isDeveloper && isUser ? ' + ' : ''}${isUser ? '인공지능이용사업자' : ''}</h4>
-                            <p>${isDeveloper ? 'AI를 직접 개발하여 제공' : ''}${isDeveloper && isUser ? ', ' : ''}${isUser ? '개발된 AI를 이용하여 제품·서비스 제공' : ''}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
+function goBack(step) {
+  if (step <= 1) {
+    // Go back to intro
+    document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('progressBar').classList.remove('active');
+    document.getElementById('introScreen').style.display = '';
+    currentStep = 0;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    showStep(step - 1);
+  }
+}
 
-            if (isHighImpact) {
-                const areaNames = {
-                    'energy': '에너지 공급',
-                    'water': '먹는물 생산',
-                    'healthcare': '보건의료 제공',
-                    'medical_device': '의료기기·디지털의료기기',
-                    'nuclear': '원자력시설 안전관리',
-                    'biometric': '범죄수사 생체인식',
-                    'decision': '채용·대출심사 등',
-                    'traffic': '교통수단·시설·체계',
-                    'public_service': '공공서비스 의사결정',
-                    'education': '교육 학생평가'
-                };
-                
-                resultHTML += `
-                    <div class="result-section">
-                        <h3>고영향 인공지능 해당 영역</h3>
-                        ${highImpactAreas.map(area => `
-                            <div class="obligation-item required">
-                                <span class="obligation-badge badge-required">해당</span>
-                                <div class="obligation-content">
-                                    <h4>${areaNames[area]}</h4>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
+function validate(step) {
+  switch(step) {
+    case 1:
+      if (getChecked('industry').length === 0) return alertMsg('업종을 선택해 주세요.');
+      if (!getRadio('companySize')) return alertMsg('기업 규모를 선택해 주세요.');
+      return true;
+    case 2:
+      if (!getRadio('aiRole')) return alertMsg('AI 관련 역할을 선택해 주세요.');
+      return true;
+    case 3:
+      if (answers.aiRole !== '무관' && answers.aiRole !== '내부업무용') {
+        if (getChecked('aiTypes').length === 0) return alertMsg('AI 시스템 유형을 선택해 주세요.');
+      }
+      return true;
+    case 4:
+      return true; // Optional
+    case 5:
+      return true;
+    case 6:
+      return true;
+  }
+  return true;
+}
 
-            resultHTML += `<div class="result-section"><h3>적용되는 의무사항</h3>`;
+function alertMsg(msg) { alert(msg); return false; }
 
-            if (isHighImpact || isGenerative) {
-                resultHTML += `
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>사전 고지 의무</h4>
-                            <p>고영향 AI 또는 생성형 AI를 이용한 제품·서비스임을 이용자에게 사전 고지해야 합니다.</p>
-                            <div class="law-article">법 제31조 제1항</div>
-                        </div>
-                    </div>
-                `;
-            }
+function collectAnswers(step) {
+  switch(step) {
+    case 1:
+      answers.industry = getChecked('industry');
+      answers.companySize = getRadio('companySize');
+      break;
+    case 2:
+      answers.aiRole = getRadio('aiRole');
+      answers.usesApi = getRadio('usesApi') || 'na';
+      answers.modelScale = getRadio('modelScale') || '모름';
+      break;
+    case 3:
+      answers.aiTypes = getChecked('aiTypes');
+      answers.canExport = getRadio('canExport') || 'no';
+      answers.isDeepfake = getRadio('isDeepfake') || 'no';
+      break;
+    case 4:
+      answers.highImpactAreas = getChecked('highImpact').filter(v => v !== '없음');
+      answers.impactLevel = getRadio('impactLevel') || null;
+      break;
+    case 5:
+      answers.decisionLevel = getRadio('decisionLevel') || '참고용';
+      answers.dataTypes = getChecked('dataTypes');
+      break;
+    case 6:
+      answers.existingSystems = getChecked('existingSystems').filter(v => v !== '없음');
+      break;
+  }
+}
 
-            if (isGenerative) {
-                resultHTML += `
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>AI 생성물 표시 의무</h4>
-                            <p>생성형 AI로 생성된 결과물에 AI 생성 사실을 표시해야 합니다.</p>
-                            <div class="law-article">법 제31조 제2항</div>
-                        </div>
-                    </div>
-                `;
-            }
+// ===== DERIVED VARIABLES =====
+function derive(a) {
+  const d = {};
+  d.isInternalUseOnly = a.aiRole === '내부업무용';
+  d.isGenerativeAi = (a.aiTypes || []).some(t => ['텍스트생성','이미지생성','음성생성'].includes(t));
+  d.hasHighImpactArea = (a.highImpactAreas || []).length > 0;
+  d.isSafetyTarget = (a.aiRole === '개발제공' || a.aiRole === '개발+이용') && a.modelScale === '대규모';
 
-            if (isDeepfake) {
-                resultHTML += `
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>딥페이크 생성물 표시 의무</h4>
-                            <p>실제와 구분하기 어려운 가상의 생성 결과물에 AI 생성 사실을 고지 또는 표시해야 합니다.</p>
-                            <div class="law-article">법 제31조 제3항</div>
-                        </div>
-                    </div>
-                `;
-            }
+  // Operator type
+  if (a.aiRole === '무관') d.operatorType = '비해당';
+  else if (a.aiRole === '내부업무용') d.operatorType = '내부';
+  else if (a.aiRole === '개발제공') d.operatorType = '개발';
+  else if (a.aiRole === '이용제공') d.operatorType = '이용';
+  else d.operatorType = '겸업';
 
-            if (isLargeScale && isCuttingEdge) {
-                resultHTML += `
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>안전성 확보 의무</h4>
-                            <p>AI 수명주기 전반에 걸친 위험 식별·평가·완화 및 위험관리체계를 구축하고, 이행 결과를 과기정통부장관에게 제출해야 합니다.</p>
-                            <div class="law-article">법 제32조</div>
-                        </div>
-                    </div>
-                `;
-            }
+  // AI operator?
+  d.isAiOperator = a.aiRole !== '무관' && !(a.aiRole === '내부업무용' && !d.hasHighImpactArea);
 
-            if (isHighImpact) {
-                resultHTML += `
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>위험관리방안 수립·운영</h4>
-                            <p>고영향 AI의 안전성·신뢰성 확보를 위한 위험관리방안을 수립하고 운영해야 합니다.</p>
-                            <div class="law-article">법 제34조 제1항 제1호</div>
-                        </div>
-                    </div>
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>설명 방안 수립·시행</h4>
-                            <p>AI가 도출한 최종결과, 주요 기준, 학습용데이터 개요 등에 대한 설명 방안을 수립·시행해야 합니다.</p>
-                            <div class="law-article">법 제34조 제1항 제2호</div>
-                        </div>
-                    </div>
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>이용자 보호 방안 수립·운영</h4>
-                            <p>AI 이용자를 보호하기 위한 방안을 수립하고 운영해야 합니다.</p>
-                            <div class="law-article">법 제34조 제1항 제3호</div>
-                        </div>
-                    </div>
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>사람의 관리·감독</h4>
-                            <p>고영향 AI에 대해 사람이 관리·감독해야 합니다.</p>
-                            <div class="law-article">법 제34조 제1항 제4호</div>
-                        </div>
-                    </div>
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>문서 작성 및 5년 보관</h4>
-                            <p>안전성·신뢰성 확보를 위한 조치 내용을 문서로 작성하고 5년간 보관해야 합니다.</p>
-                            <div class="law-article">법 제34조 제1항 제5호, 시행령 제27조 제2항</div>
-                        </div>
-                    </div>
-                    <div class="obligation-item recommended">
-                        <span class="obligation-badge badge-recommended">노력의무</span>
-                        <div class="obligation-content">
-                            <h4>영향평가 실시</h4>
-                            <p>고영향 AI 제품·서비스 제공 전에 사람의 기본권에 미치는 영향을 평가하기 위해 노력해야 합니다.</p>
-                            <div class="law-article">법 제35조 제1항</div>
-                        </div>
-                    </div>
-                `;
-            }
+  // High impact determination
+  if (!d.hasHighImpactArea) {
+    d.isHighImpact = 'none';
+  } else {
+    switch(a.impactLevel) {
+      case 'level1': d.isHighImpact = 'confirmed'; break;
+      case 'level2': d.isHighImpact = 'possible'; break;
+      case 'level3': d.isHighImpact = 'unlikely'; break;
+      default: d.isHighImpact = 'possible';
+    }
+  }
 
-            if (needsRepresentative) {
-                resultHTML += `
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>국내대리인 지정</h4>
-                            <p>국내에 사업장이 없는 해외사업자로서 일정 기준을 충족하므로, 국내대리인을 지정해야 합니다.</p>
-                            <div class="law-article">법 제36조, 시행령 제29조</div>
-                        </div>
-                    </div>
-                `;
-            }
+  return d;
+}
 
-            if (isPublicOrg && isHighImpact) {
-                resultHTML += `
-                    <div class="obligation-item required">
-                        <span class="obligation-badge badge-required">필수</span>
-                        <div class="obligation-content">
-                            <h4>영향평가 실시 제품·서비스 우선 고려</h4>
-                            <p>고영향 AI 제품·서비스를 이용하려는 경우 영향평가를 실시한 제품·서비스를 우선적으로 고려해야 합니다.</p>
-                            <div class="law-article">법 제35조 제2항</div>
-                        </div>
-                    </div>
-                `;
-            }
+// ===== REPORT GENERATION =====
+function generateReport() {
+  // Collect final step if needed
+  collectAnswers(currentStep);
 
-            resultHTML += `
-                <div class="obligation-item optional">
-                    <span class="obligation-badge badge-optional">권고</span>
-                    <div class="obligation-content">
-                        <h4>인공지능 윤리 준수</h4>
-                        <p>인간의 존엄성, 자율성, 다양성 존중 및 공익 증진 등 인공지능 윤리원칙을 준수하도록 노력해야 합니다.</p>
-                        <div class="law-article">법 제26조</div>
-                    </div>
-                </div>
-            `;
+  // Make sure we have at least basic answers
+  if (!answers.aiRole) {
+    answers.aiRole = getRadio('aiRole') || '무관';
+  }
 
-            resultHTML += `</div>`;
+  const d = derive(answers);
+  const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            resultHTML += `
-                <div class="result-section">
-                    <h3>참고사항</h3>
-                    <div class="info-box">
-                        <p><strong>고영향 AI 해당 여부 확인:</strong> 과학기술정보통신부장관에게 고영향 AI 해당 여부 확인을 요청할 수 있습니다. (법 제33조)</p>
-                    </div>
-                    <div class="info-box warning">
-                        <p><strong>과태료:</strong> 사전고지 의무(제31조 제1항) 또는 표시 의무(제31조 제2항·제3항) 위반 시 3천만원 이하의 과태료가 부과될 수 있습니다. (법 제43조)</p>
-                    </div>
-                </div>
-            `;
+  let html = '';
 
-            document.getElementById('resultBody').innerHTML = resultHTML;
+  // ---- REPORT HEADER ----
+  html += `<div class="report-header-band">
+    <h1>AI 기본법 적용 분석 리포트</h1>
+    <div class="report-date">${today} | AI 기본법 (법률 제21311호, 2026.1.22. 시행)</div>
+  </div>`;
 
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById('results').classList.add('active');
-            
-            document.querySelectorAll('.step-dot').forEach(dot => {
-                if (dot.dataset.step === 'R') {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.add('completed');
-                    dot.classList.remove('active');
-                }
-            });
+  html += '<div class="report-body">';
 
-            document.getElementById('progressFill').style.width = '100%';
-            document.getElementById('progressPercent').textContent = '100%';
+  // ---- SECTION 1: 분석 개요 ----
+  html += `<div class="report-section">
+    <div class="report-section-title">1. 분석 개요</div>
+    <div class="report-text">
+<strong>업종:</strong> ${(answers.industry || []).join(', ') || '미선택'}
+<strong>규모:</strong> ${answers.companySize || '미선택'}
+<strong>AI 역할:</strong> ${roleLabel(answers.aiRole)}
+<strong>AI 유형:</strong> ${(answers.aiTypes || []).join(', ') || '—'}
+    </div>
+  </div>`;
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+  // ---- Early exit: 무관 ----
+  if (answers.aiRole === '무관') {
+    html += `<div class="report-section">
+      <div class="report-section-title">2. 수범자 해당 여부</div>
+      <div class="report-badge badge-green">비해당</div>
+      <div class="report-text">귀사는 현재 인공지능 기술을 개발·이용하지 않으므로, AI 기본법상 인공지능사업자(법 제2조 제7호)에 해당하지 않습니다.
 
-        function restartCheck() {
-            document.querySelectorAll('input').forEach(input => {
-                input.checked = false;
-            });
-            document.querySelectorAll('.checkbox-item').forEach(item => {
-                item.classList.remove('checked');
-            });
+따라서 현 시점에서 AI 기본법상의 구체적 의무가 적용되지 않습니다.
 
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById('step1').classList.add('active');
-            
-            document.querySelectorAll('.step-dot').forEach(dot => {
-                dot.classList.remove('active', 'completed');
-                if (dot.dataset.step === '1') {
-                    dot.classList.add('active');
-                }
-            });
+다만, 향후 AI를 도입할 경우 법적 의무가 발생할 수 있으므로, AI 도입 시 사전에 적용 여부를 재검토하시기 바랍니다.</div>
+    </div>`;
+    html += '</div>' + reportFooter();
+    renderReport(html);
+    return;
+  }
 
-            currentStep = 1;
-            updateProgress();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    </script>
+  // ---- Early exit: 내부업무용 + no high impact ----
+  if (d.isInternalUseOnly && !d.hasHighImpactArea) {
+    html += `<div class="report-section">
+      <div class="report-section-title">2. 수범자 해당 여부</div>
+      <div class="report-badge badge-green">비해당 (단순 이용자)</div>
+      <div class="report-text">귀사는 AI 도구를 업무에 활용하고 있으나, 그 결과물을 AI 기반 제품·서비스로서 이용자에게 제공하지 않으므로 "단순 이용자"에 해당합니다.
+
+단순 이용자란 AI 서비스를 이용한 결과물을 자신의 업무에 활용하는 자로, 법 제2조 제7호의 인공지능사업자에 해당하지 않습니다. (예: AI로 보고서를 작성하는 일반 직원 등)
+
+다만, 향후 AI를 활용한 제품·서비스를 외부에 제공하게 될 경우 사업자 해당 여부를 재검토하시기 바랍니다.</div>
+    </div>`;
+    html += '</div>' + reportFooter();
+    renderReport(html);
+    return;
+  }
+
+  // ---- SECTION 2: 수범자 해당 여부 ----
+  html += `<div class="report-section">
+    <div class="report-section-title">2. 수범자 해당 여부</div>`;
+
+  if (d.operatorType === '개발') {
+    html += `<div class="report-badge badge-red">AI개발사업자 해당</div>
+    <div class="report-text">귀사는 인공지능을 직접 개발하여 타인에게 제공하고 있으므로, 법 제2조 제7호 가목의 "인공지능개발사업자"에 해당합니다.
+
+인공지능개발사업자란 인공지능 또는 그 기술을 개발하거나, 성능에 중대한 영향을 줄 정도로 수정·변경·개량하여 제공하는 자를 말합니다. "제공"에는 유료뿐 아니라 무상(공공서비스, 오픈소스 등)도 포함됩니다.</div>`;
+  } else if (d.operatorType === '이용') {
+    html += `<div class="report-badge badge-red">AI이용사업자 해당</div>
+    <div class="report-text">귀사는 다른 사업자가 개발한 인공지능을 이용하여 AI 기반 제품 또는 서비스를 이용자에게 제공하고 있으므로, 법 제2조 제7호 나목의 "인공지능이용사업자"에 해당합니다.
+
+인공지능이용사업자는 이용자와 직접 접촉하는 사업자로서, 투명성 확보 의무의 주된 대상이 됩니다.</div>`;
+    if (answers.usesApi === 'yes') {
+      html += `<div class="warning-box"><strong>※ API 이용사업자 주의사항</strong><br><br>
+① 이용자와 직접 접촉하는 귀사에게 투명성 확보 의무가 1차적으로 부여됩니다 (투명성 가이드라인 참조).<br>
+② 고영향 AI에 해당하는 경우, 개발사업자에게 사업자 책무 이행에 필요한 자료 제공을 요청할 수 있는 법적 권리가 있습니다 (시행령 제27조 제4항).<br>
+③ 개발사업자와의 계약서에 책임 분담, 자료 제공 의무 등이 명시되어 있는지 확인하시기 바랍니다.</div>`;
+    }
+  } else if (d.operatorType === '겸업') {
+    html += `<div class="report-badge badge-red">AI개발사업자 + AI이용사업자 동시 해당</div>
+    <div class="report-text">귀사는 AI 모델을 자체 개발하면서 이를 기반으로 직접 서비스도 제공하고 있으므로, 법 제2조 제7호 가목의 "인공지능개발사업자"이자 동시에 나목의 "인공지능이용사업자"에 해당합니다.
+
+이 경우 개발사업자와 이용사업자 양쪽의 의무를 모두 부담하게 됩니다.</div>`;
+  } else if (d.operatorType === '내부') {
+    html += `<div class="report-badge badge-yellow">※ 불확실 영역 — 전문가 상담 권고</div>
+    <div class="report-text">귀사는 AI를 외부 이용자에게 제공하지는 않지만, ${(answers.highImpactAreas||[]).join(', ')} 등 개인의 권리·의무에 중대한 영향을 미칠 수 있는 내부 의사결정에 AI를 활용하고 있습니다.
+
+이 경우 법 제2조 제7호의 "제공" 요건 충족 여부에 대한 법적 해석이 불확실합니다.
+
+다만, 설령 투명성 의무(법 제31조)가 면제되더라도, 고영향 AI 사업자 책무(법 제34조)와 영향평가(법 제35조)는 별도 근거 조항에 의해 적용될 수 있습니다.
+
+아래에서는 고영향 AI 관련 의무가 적용된다는 가정하에 분석을 이어갑니다.</div>`;
+  }
+  html += '</div>';
+
+  // ---- SECTION 3: AI 유형 판단 ----
+  html += `<div class="report-section">
+    <div class="report-section-title">3. AI 유형 판단</div>`;
+
+  // 3-A: 고영향
+  html += '<div class="report-subsection"><div class="report-subsection-title">고영향 인공지능 해당 여부</div>';
+  if (d.isHighImpact === 'none') {
+    html += `<div class="report-badge badge-green">비해당</div>
+    <div class="report-text">귀사의 AI는 법 제2조 제4호가 열거하는 고영향 인공지능 영역에 해당하지 않는 것으로 판단됩니다. 다만 모든 AI사업자는 자신의 AI가 고영향 인공지능에 해당하는지 사전에 검토할 의무가 있습니다(법 제33조 제1항).</div>`;
+  } else if (d.isHighImpact === 'confirmed') {
+    html += `<div class="report-badge badge-red">해당 (높은 확신)</div>
+    <div class="report-text">귀사의 AI는 법 제2조 제4호의 고영향 인공지능 영역인 [${(answers.highImpactAreas||[]).join(', ')}]에서 활용되고 있으며, AI 결과물이 최종 의사결정에 실질적으로 반영되고 있습니다.
+
+이는 법이 규정하는 "사람의 생명, 신체의 안전 및 기본권에 중대한 영향을 미치거나 위험을 초래할 우려"가 있는 경우에 해당할 가능성이 높습니다.
+
+해당 영역: ${(answers.highImpactAreas||[]).join(', ')}
+영향도 수준: 수준 1 (최종 판단에 실질 반영)</div>`;
+  } else if (d.isHighImpact === 'possible') {
+    html += `<div class="report-badge badge-yellow">해당 가능성 (확인 필요)</div>
+    <div class="report-text">귀사의 AI는 법 제2조 제4호의 고영향 인공지능 영역인 [${(answers.highImpactAreas||[]).join(', ')}]에서 활용되고 있으며, AI 결과물이 의사결정의 중요한 참고자료로 활용되고 있습니다.
+
+이 경우 "중대한 영향" 요건의 충족 여부에 대해 확정적 판단이 어렵습니다. 과학기술정보통신부에 법 제33조에 따른 확인 신청을 하여 고영향 인공지능 해당 여부를 확인하시기를 권고합니다.
+
+해당 영역: ${(answers.highImpactAreas||[]).join(', ')}
+영향도 수준: 수준 2 (중요 참고자료로 활용)</div>`;
+  } else { // unlikely
+    html += `<div class="report-badge badge-blue">비해당 가능성 (사전 검토 유지)</div>
+    <div class="report-text">귀사의 AI는 법 제2조 제4호의 고영향 인공지능 영역인 [${(answers.highImpactAreas||[]).join(', ')}]에서 활용되고 있으나, AI 결과물이 단순 보조·편의 기능에 한정되어 있습니다.
+
+현재로서는 고영향 인공지능에 해당하지 않을 가능성이 있으나, AI의 역할이 확대될 경우 재검토가 필요합니다.
+
+해당 영역: ${(answers.highImpactAreas||[]).join(', ')}
+영향도 수준: 수준 3 (단순 보조 기능)</div>`;
+  }
+  html += '</div>';
+
+  // 3-B: 생성형
+  html += '<div class="report-subsection"><div class="report-subsection-title">생성형 인공지능 해당 여부</div>';
+  if (!d.isGenerativeAi) {
+    html += `<div class="report-badge badge-gray">비해당</div>
+    <div class="report-text">귀사의 AI 시스템은 생성형 인공지능(법 제2조 제5호)에 해당하지 않습니다.</div>`;
+  } else {
+    const exportLabel = answers.canExport === 'yes' ? ' (외부 반출 기능 포함)' : '';
+    html += `<div class="report-badge badge-blue">해당${exportLabel}</div>
+    <div class="report-text">귀사의 AI는 생성형 인공지능에 해당합니다.`;
+    if (answers.canExport === 'yes') {
+      html += `\n\n※ 파일이 서비스 외부로 유통될 경우, 화면 내 표시만으로는 표시 효과가 유지되지 않습니다. 파일 자체에 메타데이터·워터마크 등 표시 조치를 삽입하는 것이 실무적으로 강력히 권고됩니다.`;
+    }
+    html += '</div>';
+
+    // Deepfake
+    if (answers.isDeepfake === 'yes' || answers.isDeepfake === 'uncertain') {
+      const dfLabel = answers.isDeepfake === 'yes' ? '해당' : '해당 가능성 (보수적 적용 권고)';
+      html += `<div class="report-subsection-title" style="margin-top:16px">딥페이크 생성물 해당 여부</div>
+      <div class="report-badge badge-yellow">${dfLabel}</div>
+      <div class="report-text">법 제31조 제3항에 따라, 일반 생성물보다 강화된 표시 기준이 적용됩니다. 이용자가 "명확하게 인식"할 수 있는 방식으로 표시해야 합니다.${answers.isDeepfake === 'uncertain' ? '\n\n투명성 가이드라인에 따르면, 사업자가 딥페이크 해당 여부를 판단·통제할 수 없는 경우에는 보수적으로 딥페이크 표시 기준을 적용하도록 하고 있습니다.' : ''}</div>`;
+    }
+  }
+  html += '</div>';
+
+  // 3-C: 안전성
+  html += '<div class="report-subsection"><div class="report-subsection-title">안전성 확보 대상 AI 해당 여부</div>';
+  if (d.isSafetyTarget) {
+    html += `<div class="report-badge badge-yellow">해당 가능성</div>
+    <div class="report-text">귀사가 직접 개발하는 AI 모델은 대규모 파운데이션 모델에 해당하며, 법 제32조의 안전성 확보 의무 적용 대상에 해당할 수 있습니다. 학습 연산량 등 기술적 세부사항에 대한 추가 확인이 필요합니다.</div>`;
+  } else {
+    html += `<div class="report-badge badge-green">비해당</div>
+    <div class="report-text">법 제32조의 안전성 확보 의무는 누적연산량 10²⁶ FLOPs 이상의 대규모 파운데이션 모델 개발사에 주로 적용됩니다. 귀사는 이 요건에 해당하지 않는 것으로 판단됩니다.</div>`;
+  }
+  html += '</div></div>';
+
+  // ---- SECTION 4: 적용 의무 상세 ----
+  html += `<div class="report-section">
+    <div class="report-section-title">4. 적용 의무 상세</div>`;
+
+  let obligationCount = 0;
+
+  // 4-1: Transparency
+  if (d.isInternalUseOnly) {
+    html += `<div class="report-obligation-card">
+      <h4>투명성 확보 의무</h4>
+      <div class="ob-basis">법 제31조 | 시행령 제23조 제4항 제2호</div>
+      <div class="ob-content">귀사는 AI를 내부 업무 용도로만 사용하고 있으므로, 시행령 제23조 제4항 제2호에 따라 <strong>투명성 확보 의무가 면제</strong>됩니다.
+      
+※ 단, 이 면제는 투명성 의무(법 제31조)에만 적용됩니다. 고영향 AI 사업자 책무(법 제34조)와 영향평가(법 제35조)는 별도 근거 조항에 의해 적용될 수 있습니다.</div>
+      <div class="ob-status ob-status-done">면제</div>
+    </div>`;
+  } else {
+    // 사전 고지
+    if (d.isHighImpact !== 'none' || d.isGenerativeAi) {
+      obligationCount++;
+      html += `<div class="report-obligation-card">
+        <h4>의무 ${obligationCount}. 사전 고지</h4>
+        <div class="ob-basis">법 제31조 제1항 | 시행령 제23조</div>
+        <div class="ob-content">고영향 AI 또는 생성형 AI를 이용한 제품·서비스를 제공하는 AI사업자는 해당 사실을 이용자에게 사전에 고지해야 합니다.
+
+이행 방법: ① 제품에 직접 기재(이용약관 등) ② 화면·단말기 표시 ③ 제공 장소 게시 ④ 과기정통부 장관이 인정하는 방법</div>
+        <ul class="report-checklist">
+          <li>이용약관에 AI 활용 사실 명시</li>
+          <li>서비스 초기 화면에 AI 고지</li>
+        </ul>
+      </div>`;
+    }
+
+    // 표시 의무
+    if (d.isGenerativeAi) {
+      obligationCount++;
+      let exportContent = '';
+      if (answers.canExport === 'yes') {
+        exportContent = `
+
+[외부 반출 시 표시]
+파일 자체에 표시 조치를 삽입하는 것이 실무적으로 필요합니다.
+• 텍스트: 문서 머리말, 파일 메타데이터
+• 이미지: 디지털 워터마크, EXIF/C2PA 메타데이터
+• 영상: 영상 내 로고, 자막 오버레이, 워터마킹
+• 음성: 시작/종료 시 안내, 오디오 워터마킹`;
+      }
+      html += `<div class="report-obligation-card">
+        <h4>의무 ${obligationCount}. 생성형 AI 결과물 표시</h4>
+        <div class="ob-basis">법 제31조 제2항</div>
+        <div class="ob-content">생성형 AI 결과물이 AI에 의해 생성되었음을 표시해야 합니다.
+
+[서비스 내 표시]
+① 사람이 인식 가능한 방법: 결과물 옆에 "AI 생성" 배지/라벨
+② 기계 판독 가능한 방법: 메타데이터 등 (이 경우 1회 이상 안내 필요)${exportContent}</div>
+        <ul class="report-checklist">
+          <li>결과물 옆에 "AI 생성" 라벨 표시</li>
+          ${answers.canExport === 'yes' ? '<li>다운로드 파일에 메타데이터/워터마크 삽입</li>' : ''}
+        </ul>
+      </div>`;
+
+      // 딥페이크
+      if (answers.isDeepfake !== 'no') {
+        obligationCount++;
+        html += `<div class="report-obligation-card">
+          <h4>의무 ${obligationCount}. 딥페이크 표시</h4>
+          <div class="ob-basis">법 제31조 제3항</div>
+          <div class="ob-content">실제와 구분하기 어려운 가상의 음향·이미지·영상을 제공하는 경우, 이용자가 명확하게 인식할 수 있는 방식으로 표시해야 합니다.
+
+일반 생성물 표시보다 강화된 기준이 적용되며, "기계 판독 가능 방법"만으로는 부족합니다. 이용자가 육안으로 AI 생성물임을 명확히 인식할 수 있어야 합니다.</div>
+          <ul class="report-checklist">
+            <li>가시적 표시 적용 (워터마크, 라벨 등)</li>
+            <li>인물 합성 시 추가 표시 조치</li>
+          </ul>
+        </div>`;
+      }
+    }
+  }
+
+  // 4-2: 고영향 사업자 책무
+  if (d.isHighImpact === 'confirmed' || d.isHighImpact === 'possible') {
+    obligationCount++;
+    const sys = answers.existingSystems || [];
+    html += `<div class="report-obligation-card">
+      <h4>의무 ${obligationCount}. 고영향 AI 사업자 책무</h4>
+      <div class="ob-basis">법 제34조 | 시행령 제27조</div>
+      <div class="ob-content">고영향 인공지능 관련 5가지 책무를 이행해야 합니다.</div>
+      
+      <div style="margin-top:14px;padding:12px;background:#fff;border:1px solid ${sys.includes('위험관리') ? '#c8e6c9' : '#f8bbd0'};border-radius:6px;margin-bottom:8px">
+        <strong>4-1. 위험관리방안 수립·운영</strong> <span class="ob-status ${sys.includes('위험관리') ? 'ob-status-done' : 'ob-status-none'}">${sys.includes('위험관리') ? '보유' : '미보유'}</span>
+        <div style="font-size:12px;margin-top:6px;color:#5a6a7e">위험관리정책 수립, 담당 조직 지정, 위험 식별·평가·완화, 홈페이지 게시</div>
+      </div>
+      <div style="margin-top:4px;padding:12px;background:#fff;border:1px solid ${sys.includes('설명절차') ? '#c8e6c9' : '#f8bbd0'};border-radius:6px;margin-bottom:8px">
+        <strong>4-2. 설명 방안 수립·시행</strong> <span class="ob-status ${sys.includes('설명절차') ? 'ob-status-done' : 'ob-status-none'}">${sys.includes('설명절차') ? '보유' : '미보유'}</span>
+        <div style="font-size:12px;margin-top:6px;color:#5a6a7e">AI 최종결과, 주요 판단 기준, 학습데이터 개요 설명, 홈페이지 게시</div>
+      </div>
+      <div style="margin-top:4px;padding:12px;background:#fff;border:1px solid ${sys.includes('이용자보호') ? '#c8e6c9' : '#f8bbd0'};border-radius:6px;margin-bottom:8px">
+        <strong>4-3. 이용자 보호 방안</strong> <span class="ob-status ${sys.includes('이용자보호') ? 'ob-status-done' : 'ob-status-none'}">${sys.includes('이용자보호') ? '보유' : '미보유'}</span>
+        <div style="font-size:12px;margin-top:6px;color:#5a6a7e">불만·피해 처리, 이의제기 절차, 사람에 의한 재검토, 홈페이지 게시</div>
+      </div>
+      <div style="margin-top:4px;padding:12px;background:#fff;border:1px solid ${sys.includes('관리감독자') ? '#c8e6c9' : '#f8bbd0'};border-radius:6px;margin-bottom:8px">
+        <strong>4-4. 사람의 관리·감독</strong> <span class="ob-status ${sys.includes('관리감독자') ? 'ob-status-done' : 'ob-status-none'}">${sys.includes('관리감독자') ? '지정 완료' : '미지정'}</span>
+        <div style="font-size:12px;margin-top:6px;color:#5a6a7e">관리·감독 담당자 지정, 성명·연락처 홈페이지 게시</div>
+      </div>
+      <div style="margin-top:4px;padding:12px;background:#fff;border:1px solid ${sys.includes('문서보관') ? '#c8e6c9' : '#f8bbd0'};border-radius:6px;margin-bottom:8px">
+        <strong>4-5. 문서 작성·보관</strong> <span class="ob-status ${sys.includes('문서보관') ? 'ob-status-done' : 'ob-status-none'}">${sys.includes('문서보관') ? '보유' : '미보유'}</span>
+        <div style="font-size:12px;margin-top:6px;color:#5a6a7e">안전성·신뢰성 확보 조치 문서 작성, 5년간 보관</div>
+      </div>
+    </div>`;
+
+    // 이용사업자 경감
+    if (d.operatorType === '이용') {
+      html += `<div class="info-box">
+        <strong>이용사업자 의무 경감 안내</strong><br>
+        시행령 제27조 제3항에 따라, 개발사업자가 위험관리·설명·이용자 보호 조치를 이미 이행한 경우, 귀사가 본래 목적·용도를 현저하게 변경하지 않은 한 해당 조치를 이행한 것으로 봅니다. 개발사업자의 이행 현황을 확인하시기 바랍니다.
+      </div>`;
+    }
+
+    // API 자료 요청권
+    if (answers.usesApi === 'yes') {
+      html += `<div class="info-box">
+        <strong>API 이용사업자 자료 요청권</strong><br>
+        시행령 제27조 제4항에 따라, 귀사는 개발사업자에게 사업자 책무 이행에 필요한 자료 제공을 요청할 수 있습니다. 계약서에 자료 제공 의무 조항이 포함되어 있는지 확인하시기 바랍니다.
+      </div>`;
+    }
+
+    // 영향평가
+    obligationCount++;
+    const isPublic = (answers.industry || []).includes('공공·행정') || answers.companySize === '공공기관';
+    html += `<div class="report-obligation-card">
+      <h4>의무 ${obligationCount}. 영향평가 (노력 의무)</h4>
+      <div class="ob-basis">법 제35조 | 시행령 제28조</div>
+      <div class="ob-content">고영향 AI를 이용한 제품·서비스를 제공하는 AI사업자는 사전에 기본권 영향평가를 실시하도록 노력해야 합니다. 이는 강제 의무가 아닌 "노력 의무"입니다.
+
+${isPublic ? '다만, 귀사가 공공기관과 관련된 점을 고려하면, 법 제35조 제2항에 따라 국가기관이 영향평가를 실시한 제품을 우선 고려해야 하므로 사실상 필수적입니다.' : '다만, 국가기관이 영향평가를 실시한 제품을 우선 고려해야 하므로(법 제35조 제2항), B2G 납품 시 경쟁력 확보를 위해 사실상 필수적입니다.'}
+
+영향평가 포함 사항: ① 피영향자 식별 ② 기본권 유형 식별 ③ 사회적·경제적 영향 ④ 사용 행태 ⑤ 평가지표·결과산출 ⑥ 위험 완화 방안 ⑦ 이행계획
+
+지원: 정보통신정책연구원(KISDI) — 상담·컨설팅, 샘플 보고서 제공</div>
+    </div>`;
+  }
+
+  // 4-4: 안전성
+  if (d.isSafetyTarget) {
+    obligationCount++;
+    html += `<div class="report-obligation-card">
+      <h4>의무 ${obligationCount}. 안전성 확보</h4>
+      <div class="ob-basis">법 제32조 | 시행령 제24조 | 안전성 확보 가이드라인</div>
+      <div class="ob-content">대규모 AI 모델에 대한 안전성 확보 조치를 이행해야 합니다.
+
+• 위험 식별: 수명주기 전반에 걸친 위험 사전 식별·문서화
+• 위험 평가: 중대성, 실현가능성, 심각성·빈도 평가
+• 위험 완화: 평가 결과 기반 완화 조치, 긴급 대응 계획
+• 위험관리체계: 안전사고 모니터링·대응 체계 구축
+• 이행 결과 제출: 과기정통부에 제출
+• 안전사고 보고: 인지 24시간 내 최초 → 7일 내 초동조치 → 15일 내 결과</div>
+    </div>`;
+  }
+
+  // 사전 검토 의무 (모든 사업자)
+  html += `<div class="report-obligation-card">
+    <h4>공통 의무: 고영향 AI 사전 검토</h4>
+    <div class="ob-basis">법 제33조</div>
+    <div class="ob-content">모든 AI사업자는 자신의 AI가 고영향 인공지능에 해당하는지 사전에 검토할 의무가 있습니다. AI 활용 범위가 변경되거나 서비스가 확장될 때마다 재검토가 필요합니다.</div>
+  </div>`;
+  html += '</div>';
+
+  // ---- SECTION 5: 미이행 시 리스크 ----
+  html += `<div class="report-section">
+    <div class="report-section-title">5. 미이행 시 리스크</div>`;
+  if (!d.isInternalUseOnly) {
+    html += `<div class="report-risk-item"><strong>과태료 (법 제43조)</strong><br>
+    • 사전 고지 불이행 (투명성 제1항 위반): 3,000만원 이하<br>
+    • 국내대리인 미지정: 3,000만원 이하<br>
+    • 중지·시정명령 불이행: 3,000만원 이하</div>`;
+  }
+  html += `<div class="report-risk-item indirect"><strong>B2G 기회 상실</strong><br>
+  국가기관은 검·인증 또는 영향평가를 실시한 AI 제품을 우선 고려해야 합니다. 관련 의무 미이행 시 공공기관 납품 경쟁에서 불이익이 예상됩니다.</div>
+  <div class="report-risk-item indirect"><strong>평판 리스크 및 규제 강화</strong><br>
+  AI 관련 사고 발생 시 법적 의무 이행 여부가 쟁점이 될 수 있습니다. 시행령·고시는 3년 주기로 재검토되므로(시행령 제33조), 선제적 이행이 향후 규제 강화에 대한 대비가 됩니다.</div>`;
+  html += '</div>';
+
+  // ---- SECTION 6: 실행 지원 안내 ----
+  const showSection6 = d.isHighImpact === 'possible' || (d.isInternalUseOnly && d.hasHighImpactArea) || answers.companySize === '스타트업' || answers.companySize === '중소기업';
+  if (showSection6) {
+    html += `<div class="report-section">
+      <div class="report-section-title">6. 실행 지원 안내</div>`;
+    if (d.isHighImpact === 'possible') {
+      html += `<div class="report-support-box"><strong> 고영향 AI 확인 신청 (법 제33조)</strong><br><br>
+      귀사의 AI가 고영향 인공지능에 해당하는지 판단이 어려운 경우, 과학기술정보통신부 장관에게 확인을 요청할 수 있습니다.<br><br>
+      • 신청 방법: 과기정통부 인공지능안전신뢰정책과<br>
+      • 전문위원회 자문 가능 (법 제33조 제2항)<br>
+      • 확인 결과에 따라 의무 범위가 크게 달라지므로, 사전 확인을 강력히 권장합니다.</div>`;
+    }
+    if (d.isInternalUseOnly && d.hasHighImpactArea) {
+      html += `<div class="report-support-box"><strong>내부 업무용 AI의 사업자 해당 여부 확인</strong><br><br>
+      인공지능사업자 해당 여부에 대한 법적 해석이 불확실하므로, ① 법 제33조에 따른 확인 신청 ② 전문 법률가의 개별 자문 ③ 리스크 관리 차원에서 자발적 이행 중 하나를 권고합니다.</div>`;
+    }
+    if (answers.companySize === '스타트업' || answers.companySize === '중소기업') {
+      html += `<div class="report-support-box"><strong>정부 지원 사업 안내</strong><br><br>
+      • AI 바우처 지원 사업 (과기정통부/NIA)<br>
+      • AI 학습데이터 구축 사업<br>
+      • AI 중소벤처 실증 지원<br>
+      • 영향평가 컨설팅 지원 (KISDI)<br><br>
+      상세 정보: AI허브(aihub.or.kr) 또는 과기정통부 홈페이지</div>`;
+    }
+    html += '</div>';
+  }
+
+  // ---- SECTION 7: 권고사항 ----
+  html += `<div class="report-section">
+    <div class="report-section-title">${showSection6 ? '7' : '6'}. 권고사항</div>`;
+  
+  // 이행 로드맵
+  html += `<div class="report-recommend-item">
+    <h5>이행 로드맵</h5>
+    <p>1단계 (즉시): AI 활용 현황 전수 조사 및 고영향 해당 여부 재확인<br>
+    2단계 (1개월 내): 투명성 의무 이행 (사전 고지, 표시 조치)<br>
+    3단계 (3개월 내): 고영향 사업자 책무 체계 구축 (해당 시)<br>
+    4단계 (6개월 내): 전체 의무 이행 완료 및 문서화<br>
+    5단계 (연 1회): 정기 검토 및 업데이트</p>
+  </div>`;
+
+  if (d.isGenerativeAi && !d.isInternalUseOnly) {
+    html += `<div class="report-recommend-item">
+      <h5>투명성 이행 권고</h5>
+      <p>• 이용약관 또는 초기 화면에 "본 서비스는 AI 기술을 활용합니다" 문구 추가<br>
+      • 결과물 옆에 "AI 생성" 라벨 추가 또는 기계 판독 가능 메타데이터 삽입
+      ${answers.canExport === 'yes' ? '<br>• 다운로드 파일에 메타데이터·워터마크 삽입' : ''}
+      ${answers.isDeepfake !== 'no' ? '<br>• 딥페이크 해당 결과물에 가시적 표시 적용' : ''}</p>
+    </div>`;
+  }
+
+  if (d.isHighImpact === 'confirmed') {
+    html += `<div class="report-recommend-item">
+      <h5> 고영향 AI 이행 권고</h5>
+      <p>• 위험관리 정책 수립 및 담당 조직 지정<br>
+      • AI 주요 판단 기준과 학습데이터 개요 공개<br>
+      • 이의제기 절차와 사람에 의한 재검토 절차 마련<br>
+      • 관리·감독 담당자 지정 및 홈페이지 공개<br>
+      • 모든 조치 이행 문서 작성 및 5년간 보관</p>
+    </div>`;
+  }
+
+  if (answers.usesApi === 'yes') {
+    html += `<div class="report-recommend-item">
+      <h5>API 이용사업자 계약 검토</h5>
+      <p>개발사업자 계약서에 다음 포함 여부 확인: 정보 제공 조항, 고영향 AI 자료 제공 의무(시행령 §27④), 위험 발생 시 책임 분담, AI 모델 변경 시 사전 통보</p>
+    </div>`;
+  }
+
+  html += '</div>';
+
+  // Close report body
+  html += '</div>';
+
+  // Footer
+  html += reportFooter();
+
+  renderReport(html);
+}
+
+function reportFooter() {
+  return `<div class="report-footer">
+    <div class="attorney-name">이정봉 변호사</div>
+    <div class="attorney-info">
+      블로그: <a href="https://jbleelaw.blog" target="_blank">jbleelaw.blog</a><br>
+      유튜브: 켄타우루스 lawyer 이정봉
+    </div>
+    <div class="disclaimer-text">
+      본 리포트는 AI 기본법에 대한 일반적 분석 결과로서 법률 자문을 대체하지 않습니다.
+      구체적 상황에 맞는 법률 자문이 필요하시면 위 연락처로 문의하시기 바랍니다.
+    </div>
+  </div>`;
+}
+
+function roleLabel(role) {
+  const map = {
+    '개발제공': 'AI개발사업자 (AI를 개발하여 타인에게 제공)',
+    '이용제공': 'AI이용사업자 (타사 AI를 활용하여 서비스 제공)',
+    '개발+이용': 'AI개발+이용 겸업 (자체 개발 + 직접 서비스)',
+    '내부업무용': '내부 업무용 AI 활용',
+    '무관': 'AI 미활용'
+  };
+  return map[role] || role;
+}
+
+function renderReport(html) {
+  // Hide everything else
+  document.getElementById('progressBar').classList.remove('active');
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('introScreen').style.display = 'none';
+
+  // Show report
+  document.getElementById('reportContainer').innerHTML = html;
+  document.getElementById('reportScreen').classList.add('active');
+  document.getElementById('reportScreen').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restartAnalysis() {
+  // Reset
+  document.getElementById('reportScreen').classList.remove('active');
+  document.getElementById('reportScreen').style.display = 'none';
+  document.querySelectorAll('.option-item').forEach(item => {
+    item.classList.remove('selected');
+    const input = item.querySelector('input');
+    if (input) input.checked = false;
+  });
+  document.querySelectorAll('.conditional').forEach(c => c.classList.remove('visible'));
+  Object.keys(answers).forEach(k => delete answers[k]);
+  document.getElementById('introScreen').style.display = '';
+  currentStep = 0;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+// ===== PDF DOWNLOAD =====
+function downloadPDF() {
+  const element = document.getElementById('reportContainer');
+  const today = new Date().toISOString().slice(0,10);
+  const opt = {
+    margin: [10, 10, 10, 10],
+    filename: 'AI기본법_분석리포트_' + today + '.pdf',
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+  // Show loading state
+  const btn = event.target;
+  const origText = btn.textContent;
+  btn.textContent = 'PDF 생성 중...';
+  btn.disabled = true;
+  html2pdf().set(opt).from(element).save().then(function() {
+    btn.textContent = origText;
+    btn.disabled = false;
+  }).catch(function() {
+    btn.textContent = origText;
+    btn.disabled = false;
+    // Fallback to print
+    window.print();
+  });
+}
+
+// ===== IFRAME AUTO-RESIZE =====
+// Sends current document height to parent window so the iframe can auto-resize
+function notifyParentHeight() {
+  const height = document.documentElement.scrollHeight;
+  window.parent.postMessage({ type: 'resize', height: height }, '*');
+}
+// Notify on load, after transitions, and on resize
+window.addEventListener('load', () => setTimeout(notifyParentHeight, 100));
+window.addEventListener('resize', notifyParentHeight);
+// Also notify whenever step changes or report is generated
+const _origShowStep = showStep;
+showStep = function(n) { _origShowStep(n); setTimeout(notifyParentHeight, 500); };
+const _origRenderReport = renderReport;
+renderReport = function(html) { _origRenderReport(html); setTimeout(notifyParentHeight, 500); };
+const _origRestartAnalysis = restartAnalysis;
+restartAnalysis = function() { _origRestartAnalysis(); setTimeout(notifyParentHeight, 500); };
+</script>
 </body>
 </html>
