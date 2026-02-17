@@ -667,8 +667,17 @@ body {
   .site-header, .progress-bar, .report-actions, .btn-primary, .btn-secondary, .btn-gold { display: none !important; }
   .report-screen { display: block !important; }
   .report-container { box-shadow: none; border: none; }
-  body { background: white; }
+  body { background: white; font-size: 12pt; }
   .container { max-width: 100%; padding: 0; }
+  .report-body { padding: 20px; }
+  .report-header-band { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .report-section-title { font-size: 16pt; }
+  .report-text { font-size: 11pt; line-height: 1.7; }
+  .report-obligation-card { break-inside: avoid; }
+  .report-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .report-footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .badge-green, .badge-yellow, .badge-red, .badge-blue, .badge-gray { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ob-status-done, .ob-status-none { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
 </head>
@@ -1010,7 +1019,6 @@ body {
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 // ===== STATE =====
 let currentStep = 0; // 0 = intro
@@ -1735,30 +1743,69 @@ function restartAnalysis() {
 }
 // ===== PDF DOWNLOAD =====
 function downloadPDF() {
-  const element = document.getElementById('reportContainer');
-  const today = new Date().toISOString().slice(0,10);
-  const opt = {
-    margin: [10, 10, 10, 10],
-    filename: 'AI기본법_분석리포트_' + today + '.pdf',
-    image: { type: 'jpeg', quality: 0.95 },
-    html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-  };
-  // Show loading state
-  const btn = event.target;
-  const origText = btn.textContent;
-  btn.textContent = 'PDF 생성 중...';
-  btn.disabled = true;
-  html2pdf().set(opt).from(element).save().then(function() {
-    btn.textContent = origText;
-    btn.disabled = false;
-  }).catch(function() {
-    btn.textContent = origText;
-    btn.disabled = false;
-    // Fallback to print
-    window.print();
-  });
+  const reportHTML = document.getElementById('reportContainer').innerHTML;
+  const newWin = window.open('', '_blank');
+  if (!newWin) {
+    alert('팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해 주세요.');
+    return;
+  }
+  newWin.document.write('<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>AI 기본법 분석 리포트</title>');
+  newWin.document.write('<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">');
+  newWin.document.write('<style>');
+  // Copy essential styles
+  newWin.document.write(`
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Noto Sans KR',sans-serif;background:#fff;color:#1e2a3a;line-height:1.7;padding:0;-webkit-font-smoothing:antialiased}
+    .report-container{max-width:800px;margin:0 auto;overflow:hidden}
+    .report-header-band{background:linear-gradient(135deg,#0f1a2e,#1a2844);padding:32px;color:#fff;text-align:center}
+    .report-header-band h1{font-family:'Noto Serif KR',serif;font-size:24px;margin-bottom:6px}
+    .report-header-band .report-date{color:#e8c06a;font-size:13px}
+    .report-body{padding:32px}
+    .report-section{margin-bottom:32px}
+    .report-section-title{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:600;color:#0f1a2e;padding-bottom:10px;border-bottom:2px solid #c9953c;margin-bottom:18px}
+    .report-subsection{margin-bottom:20px}
+    .report-subsection-title{font-size:15px;font-weight:600;color:#1a2844;margin-bottom:8px}
+    .report-text{font-size:14px;line-height:1.85;color:#1e2a3a;white-space:pre-line}
+    .report-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:12px}
+    .badge-green{background:#e8f5e9;color:#2a7d4f;border:1px solid #c8e6c9}
+    .badge-yellow{background:#fff8e1;color:#b8860b;border:1px solid #ffecb3}
+    .badge-red{background:#fce4ec;color:#c0392b;border:1px solid #f8bbd0}
+    .badge-blue{background:#e3f2fd;color:#2471a3;border:1px solid #bbdefb}
+    .badge-gray{background:#f5f5f5;color:#5a6a7e;border:1px solid #e0e0e0}
+    .report-obligation-card{border:1px solid #e8ecf1;border-radius:8px;padding:20px;margin-bottom:16px;background:#fafbfc}
+    .report-obligation-card h4{font-size:14px;font-weight:700;color:#0f1a2e;margin-bottom:6px}
+    .report-obligation-card .ob-basis{font-size:12px;color:#2471a3;margin-bottom:10px}
+    .report-obligation-card .ob-content{font-size:13px;line-height:1.75;color:#1e2a3a}
+    .ob-status{margin-top:10px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:4px;display:inline-block}
+    .ob-status-done{background:#e8f5e9;color:#2a7d4f}
+    .ob-status-none{background:#fce4ec;color:#c0392b}
+    .report-checklist{margin-top:12px;padding-left:0}
+    .report-checklist li{list-style:none;font-size:13px;padding:4px 0;color:#1e2a3a}
+    .report-checklist li::before{content:'□ ';color:#3d4f6f}
+    .report-risk-item{padding:12px 16px;border-left:3px solid #c0392b;background:rgba(192,57,43,0.03);margin-bottom:10px;border-radius:0 6px 6px 0;font-size:13px;line-height:1.7}
+    .report-risk-item.indirect{border-left-color:#b8860b;background:rgba(201,149,60,0.05)}
+    .info-box{background:rgba(36,113,163,0.06);border-left:3px solid #2471a3;padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:13px;line-height:1.7}
+    .warning-box{background:rgba(201,149,60,0.08);border-left:3px solid #b8860b;padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:13px;line-height:1.7}
+    .report-support-box{background:rgba(36,113,163,0.05);border:1px solid rgba(36,113,163,0.15);border-radius:8px;padding:18px 20px;margin-bottom:14px;font-size:13px;line-height:1.75}
+    .report-recommend-item{padding:14px 18px;border:1px solid #e8ecf1;border-radius:8px;margin-bottom:10px;background:#fff}
+    .report-recommend-item h5{font-size:13px;font-weight:600;color:#0f1a2e;margin-bottom:6px}
+    .report-recommend-item p{font-size:13px;color:#1e2a3a;line-height:1.7}
+    .report-footer{background:#0f1a2e;padding:28px 32px;text-align:center}
+    .report-footer .attorney-name{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:600;color:#e8c06a;margin-bottom:10px}
+    .report-footer .attorney-info{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.8}
+    .report-footer a{color:#e8c06a;text-decoration:none}
+    .report-footer .disclaimer-text{font-size:11px;color:rgba(255,255,255,0.5);margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1)}
+    .print-actions{text-align:center;padding:20px;background:#f4f1eb}
+    .print-actions button{padding:12px 36px;font-size:15px;font-weight:600;border:none;border-radius:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin:0 6px}
+    .btn-print{background:#0f1a2e;color:#fff}
+    .btn-close{background:#fff;color:#0f1a2e;border:1.5px solid #d4dae3!important}
+    @media print{.print-actions{display:none!important}.report-header-band,.report-footer,.badge-green,.badge-yellow,.badge-red,.badge-blue,.badge-gray,.ob-status-done,.ob-status-none{-webkit-print-color-adjust:exact;print-color-adjust:exact}.report-obligation-card{break-inside:avoid}}
+  `);
+  newWin.document.write('</style></head><body>');
+  newWin.document.write('<div class="print-actions"><button class="btn-print" onclick="window.print()">인쇄 / PDF 저장</button><button class="btn-close" onclick="window.close()">닫기</button></div>');
+  newWin.document.write('<div class="report-container">' + reportHTML + '</div>');
+  newWin.document.write('</body></html>');
+  newWin.document.close();
 }
 
 // ===== IFRAME AUTO-RESIZE =====
